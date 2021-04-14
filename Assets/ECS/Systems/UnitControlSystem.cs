@@ -1,3 +1,4 @@
+using System;
 using ECS.Components;
 using ECS.MonoBehaviours;
 using ECS.Other;
@@ -14,6 +15,7 @@ namespace ECS.Systems
 {
     public class UnitControlSystem : SystemBase
     {
+        private static float SelectionAreaMinSize { get; } = 1f;
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
         private float3 StartMousePosition { get; set; }
 
@@ -68,6 +70,13 @@ namespace ECS.Systems
                 math.max(StartMousePosition.y, mousePosition.y),
                 0);
 
+            var selectionAreaSize = math.distance(lowerLeftCorner, upperRightCorner);
+            if (selectionAreaSize < SelectionAreaMinSize)
+            {
+                lowerLeftCorner += new float3(-0.5f, -0.5f, 0) * (SelectionAreaMinSize - selectionAreaSize);
+                upperRightCorner += new float3(0.5f, 0.5f, 0) * (SelectionAreaMinSize - selectionAreaSize);
+            }
+
             Entities
                 .WithAll<SelectedTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, in Translation translation) =>
@@ -103,12 +112,6 @@ namespace ECS.Systems
                     moveComponent.Position = mousePosition;
                     moveComponent.IsMoving = true;
                 }).Schedule();
-        }
-        
-        
-        private void ProcessRightButtonUp(EntityCommandBuffer.ParallelWriter parallelWriter)
-        {
-            
         }
     }
 }
