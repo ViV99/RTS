@@ -15,7 +15,7 @@ namespace ECS.Systems
 {
     public class UnitControlSystem : SystemBase
     {
-        private static float SelectionAreaMinSize { get; } = 1f;
+        private const float SelectionAreaMinSize = 1f;
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
         private float3 StartMousePosition { get; set; }
 
