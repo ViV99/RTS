@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using ECS.Other;
+using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ECS.MonoBehaviours
@@ -14,7 +18,7 @@ namespace ECS.MonoBehaviours
         private float CameraFollowZoom { get; set; }
 
         public Transform selectionAreaTransform;
-
+        
         private void Awake()
         {
             Instance = this;
@@ -22,12 +26,13 @@ namespace ECS.MonoBehaviours
 
         private void Start()
         {
-            CameraFollowZoom = 4f;
+            CameraFollowZoom = 8f;
             cameraFollow.Setup(() => CameraFollowPosition, () => CameraFollowZoom, true, true);
+            
             // TODO: заспавнить юнитов
         }
 
-        // Update is called once per frame
+        
         void Update()
         {
             HandleCamera();
@@ -61,14 +66,14 @@ namespace ECS.MonoBehaviours
 
             if (Input.mouseScrollDelta.y > 0)
             {
-                CameraFollowZoom -= 1 * CameraZoomSpeed * Time.deltaTime;
+                CameraFollowZoom -= CameraZoomSpeed * Time.deltaTime;
             }
             else if (Input.mouseScrollDelta.y < 0)
             {
-                CameraFollowZoom += 1 * CameraZoomSpeed * Time.deltaTime;
+                CameraFollowZoom += CameraZoomSpeed * Time.deltaTime;
             }
 
-            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 1f, 8f);
+            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 1f, 100f);
         }
     }
 }

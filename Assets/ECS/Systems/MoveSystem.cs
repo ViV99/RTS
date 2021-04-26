@@ -2,6 +2,7 @@ using ECS.Components;
 using ECS.Other;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -13,10 +14,11 @@ namespace ECS.Systems
 
         protected override void OnUpdate()
         {
-            var deltaTime = Time.DeltaTime;
-
-            Entities.ForEach(
-                (ref Translation translation, ref MoveToComponent moveToComponent, ref Rotation rotation) =>
+            Entities.ForEach((
+                ref Translation translation,
+                ref MoveToComponent moveToComponent,
+                ref Rotation rotation,
+                ref PhysicsVelocity physicsVelocity) =>
                 {
                     if (!moveToComponent.IsMoving)
                         return;
@@ -25,7 +27,7 @@ namespace ECS.Systems
                     {
                         moveToComponent.LastMoveDirection =
                             math.normalizesafe(moveToComponent.Position - translation.Value);
-                        translation.Value += moveToComponent.LastMoveDirection * moveToComponent.MoveSpeed * deltaTime;
+                        physicsVelocity.Linear = moveToComponent.LastMoveDirection * moveToComponent.MoveSpeed;
                         var directionQuaternion = quaternion.Euler(
                             0,
                             0,

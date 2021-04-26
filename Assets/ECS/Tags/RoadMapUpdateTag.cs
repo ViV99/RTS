@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace ECS.Tags
 {
-    public struct SelectedTag : IComponentData
+    public struct RoadMapUpdateTag : IComponentData
     {
     }
 }
