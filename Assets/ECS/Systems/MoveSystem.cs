@@ -1,5 +1,7 @@
 using ECS.Components;
 using ECS.Other;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -10,33 +12,36 @@ namespace ECS.Systems
 {
     public class MoveSystem : SystemBase
     {
-        private const float ReachedPositionDistance = 1f;
-
+        private const float ReachedPositionDistance = 0.5f;
+        
         protected override void OnUpdate()
         {
             Entities.ForEach((
                 ref Translation translation,
-                ref MoveToComponent moveToComponent,
-                ref Rotation rotation,
+                ref MoveToComponent moveTo,
                 ref PhysicsVelocity physicsVelocity) =>
                 {
-                    if (!moveToComponent.IsMoving)
+                    if (!moveTo.IsMoving)
                         return;
-
-                    if (math.distance(translation.Value, moveToComponent.Position) > ReachedPositionDistance)
+                    
+                    var moveToPosFloat = new float3(moveTo.Position, 0);
+                    if (math.distance(translation.Value, moveToPosFloat) > ReachedPositionDistance)
                     {
-                        moveToComponent.LastMoveDirection =
-                            math.normalizesafe(moveToComponent.Position - translation.Value);
-                        physicsVelocity.Linear = moveToComponent.LastMoveDirection * moveToComponent.MoveSpeed;
-                        var directionQuaternion = quaternion.Euler(
-                            0,
-                            0,
-                            Utilities.GetAngleFromVectorFloat(moveToComponent.LastMoveDirection));
-                        rotation.Value = math.slerp(rotation.Value, directionQuaternion, moveToComponent.TurnSpeed);
+                        if (moveTo.FramesCount == 6)
+                        {
+                            if (math.distance(moveTo.LastStatePosition, translation.Value.xy) 
+                                < ReachedPositionDistance / 7)
+                                moveTo.IsMoving = false;
+                            moveTo.LastStatePosition = translation.Value.xy;
+                            moveTo.FramesCount = 0;
+                        }
+                        moveTo.LastMoveDirection = math.normalizesafe(moveToPosFloat - translation.Value);
+                        physicsVelocity.Linear = moveTo.LastMoveDirection * moveTo.MoveSpeed;
+                        moveTo.FramesCount++;
                     }
                     else
                     {
-                        moveToComponent.IsMoving = false;
+                        moveTo.IsMoving = false;
                     }
                 }).Schedule();
         }

@@ -1,4 +1,6 @@
 using System;
+using ECS.Systems;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ECS.MonoBehaviours
@@ -9,10 +11,10 @@ namespace ECS.MonoBehaviours
         private const float CameraZoomSpeed = 3f;
 
         private Camera MyCamera { get; set; }
-        private Func<Vector3> GetCameraFollowPositionFunc { get; set; }
+        private Func<float3> GetCameraFollowPositionFunc { get; set; }
         private Func<float> GetCameraZoomFunc { get; set; }
 
-        public void Setup(Func<Vector3> getCameraFollowPositionFunc, Func<float> getCameraZoomFunc,
+        public void Setup(Func<float3> getCameraFollowPositionFunc, Func<float> getCameraZoomFunc,
             bool teleportToFollowPosition, bool instantZoom)
         {
             GetCameraFollowPositionFunc = getCameraFollowPositionFunc;
@@ -25,7 +27,7 @@ namespace ECS.MonoBehaviours
                 cameraFollowPosition.z = currentTransform.position.z;
                 currentTransform.position = cameraFollowPosition;
             }
-
+            
             if (instantZoom)
             {
                 MyCamera.orthographicSize = getCameraZoomFunc();
@@ -37,7 +39,7 @@ namespace ECS.MonoBehaviours
             MyCamera = transform.GetComponent<Camera>();
         }
 
-        public void SetCameraFollowPosition(Vector3 cameraFollowPosition)
+        public void SetCameraFollowPosition(float3 cameraFollowPosition)
         {
             GetCameraFollowPositionFunc = () => cameraFollowPosition;
         }
@@ -59,18 +61,18 @@ namespace ECS.MonoBehaviours
             
             var cameraFollowPosition = GetCameraFollowPositionFunc();
             var currentTransform = transform;
-            var position = currentTransform.position;
+            var position = (float3)currentTransform.position;
             cameraFollowPosition.z = position.z;
 
-            var cameraMoveDir = (cameraFollowPosition - position).normalized;
-            var distance = Vector3.Distance(cameraFollowPosition, position);
+            var cameraMoveDir = math.normalize(cameraFollowPosition - position);
+            var distance = math.distance(cameraFollowPosition, position);
 
             if (distance <= 0) return;
             
             var newCameraPosition =
-                transform.position + cameraMoveDir * (distance * CameraMoveSpeed * Time.deltaTime);
+                (float3)transform.position + cameraMoveDir * (distance * CameraMoveSpeed * Time.deltaTime);
 
-            var distanceAfterMoving = Vector3.Distance(newCameraPosition, cameraFollowPosition);
+            var distanceAfterMoving = math.distance(newCameraPosition, cameraFollowPosition);
 
             if (distanceAfterMoving > distance)
             {

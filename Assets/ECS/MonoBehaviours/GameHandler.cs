@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ECS.Components;
 using ECS.Other;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,7 +15,7 @@ namespace ECS.MonoBehaviours
         public static GameHandler Instance { get; private set; }
 
         [SerializeField] private CameraFollow cameraFollow;
-        private Vector3 CameraFollowPosition { get; set; }
+        private float3 CameraFollowPosition { get; set; }
         private float CameraFollowZoom { get; set; }
 
         public Transform selectionAreaTransform;
@@ -29,7 +30,6 @@ namespace ECS.MonoBehaviours
             CameraFollowZoom = 8f;
             cameraFollow.Setup(() => CameraFollowPosition, () => CameraFollowZoom, true, true);
             
-            // TODO: заспавнить юнитов
         }
 
         
@@ -62,7 +62,7 @@ namespace ECS.MonoBehaviours
             }
 
             moveDir = moveDir.normalized;
-            CameraFollowPosition += moveDir * CameraMoveSpeed * Time.deltaTime;
+            CameraFollowPosition += (float3)moveDir * CameraMoveSpeed * Time.deltaTime;
 
             if (Input.mouseScrollDelta.y > 0)
             {
