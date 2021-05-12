@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 7001250019107386343}
   - component: {fileID: 7001250019107386342}
   - component: {fileID: 8220482859793839491}
-  - component: {fileID: 810698533328154989}
   - component: {fileID: 583110003699416345}
   - component: {fileID: 8160738533746584617}
   - component: {fileID: 3753301079189149404}
   - component: {fileID: 8015521957571632362}
+  - component: {fileID: 7501417870752797206}
   m_Layer: 0
   m_Name: SimplePlayer2UnitPrefab
   m_TagString: Untagged
@@ -101,20 +101,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 0
---- !u!114 &810698533328154989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7001250019107386345}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cee1f27fbeb208d4b9f7448c5cc8e240, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TurnSpeed: 0.1
-  MoveSpeed: 10
 --- !u!114 &583110003699416345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,3 +318,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b863cea92ee42142a61f71c450260c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7501417870752797206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7001250019107386345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0912f59d1a7221418279d200f0c9a24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 0
+  CurrentHealth: 0
+  Armor: 0
+  TurnSpeed: 0
+  MoveSpeed: 0
+  Damage: 0
+  ReloadTime: 0

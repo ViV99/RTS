@@ -19,7 +19,8 @@ namespace ECS.Systems
             Entities.ForEach((
                 ref Translation translation,
                 ref MoveToComponent moveTo,
-                ref PhysicsVelocity physicsVelocity) =>
+                ref PhysicsVelocity physicsVelocity,
+                ref UnitStatsComponent stats) =>
                 {
                     if (!moveTo.IsMoving)
                         return;
@@ -36,7 +37,7 @@ namespace ECS.Systems
                             moveTo.FramesCount = 0;
                         }
                         moveTo.LastMoveDirection = math.normalizesafe(moveToPosFloat - translation.Value);
-                        physicsVelocity.Linear = moveTo.LastMoveDirection * moveTo.MoveSpeed;
+                        physicsVelocity.Linear = moveTo.LastMoveDirection * stats.MoveSpeed;
                         moveTo.FramesCount++;
                     }
                     else

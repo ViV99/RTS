@@ -21,8 +21,10 @@ namespace ECS.Systems
                 var eCopy = EntityManager.Instantiate(e);
                 EntityManager.AddBuffer<MoveQueueElementComponent>(eCopy);
                 EntityManager.AddBuffer<OrderQueueElementComponent>(eCopy);
-                EntityManager.AddComponentData(eCopy, new OrderQueueInfoComponent {L = 0, R = 0, Count = 0});
-                EntityManager.AddComponentData(eCopy, new MoveQueueInfoComponent {Index = 0, Count = 0});
+                EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<OrderQueueInfoComponent>());
+                EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveQueueInfoComponent>());
+                EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveToComponent>());
+                EntityManager.AddComponentData(eCopy, new HealthBarReferenceComponent {HealthBarEntity = Entity.Null});
             }
             for (var i = 0; i < 1; i++)
             {

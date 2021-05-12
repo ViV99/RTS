@@ -13,7 +13,8 @@ namespace ECS.Systems
         {
             Entities.ForEach((
                 ref MoveToComponent moveTo,
-                ref Rotation rotation) =>
+                ref Rotation rotation,
+                ref UnitStatsComponent stats) =>
             {
                 if (!moveTo.IsMoving)
                     return;
@@ -22,7 +23,7 @@ namespace ECS.Systems
                     0,
                     0,
                     Utilities.GetAngleFromVectorFloat(moveTo.LastMoveDirection));
-                rotation.Value = math.slerp(rotation.Value, directionQuaternion, moveTo.TurnSpeed);
+                rotation.Value = math.slerp(rotation.Value, directionQuaternion, stats.TurnSpeed);
             }).Schedule();
         }
     }
