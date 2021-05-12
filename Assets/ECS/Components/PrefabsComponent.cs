@@ -7,5 +7,6 @@ namespace ECS.Components
     {
         public Entity SimpleUnitPrefab;
         public Entity SimpleSolidPrefab;
+        public Entity SimpleHealthPrefab;
     }
 }
