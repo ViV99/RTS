@@ -331,9 +331,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 0
-  CurrentHealth: 0
+  Health: 0
   Armor: 0
   TurnSpeed: 0
   MoveSpeed: 0
   Damage: 0
   ReloadTime: 0
+  CurrentLoad: 0

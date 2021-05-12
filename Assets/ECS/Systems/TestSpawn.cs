@@ -15,16 +15,20 @@ namespace ECS.Systems
         {
             if (cnt > 0)
                 return;
-            for (var i = 0; i < 40; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var e = GetSingleton<PrefabsComponent>().SimplePlayer1UnitPrefab;
+                var e1 = GetSingleton<PrefabsComponent>().HealthBarPrefab;
                 var eCopy = EntityManager.Instantiate(e);
                 EntityManager.AddBuffer<MoveQueueElementComponent>(eCopy);
                 EntityManager.AddBuffer<OrderQueueElementComponent>(eCopy);
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<OrderQueueInfoComponent>());
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveQueueInfoComponent>());
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveToComponent>());
-                EntityManager.AddComponentData(eCopy, new HealthBarReferenceComponent {HealthBarEntity = Entity.Null});
+                EntityManager.AddComponentData(eCopy, new HealthBarReferenceComponent
+                {
+                    HealthBarEntity = EntityManager.Instantiate(e1)
+                });
             }
             for (var i = 0; i < 1; i++)
             {
