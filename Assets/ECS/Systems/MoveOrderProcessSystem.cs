@@ -16,6 +16,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace ECS.Systems
 {
+    [UpdateAfter(typeof(OrderQueueUpdateSystem))]
     public class MoveOrderProcessSystem : SystemBase
     {
         private const float ReachedPositionDistance = 10f;
@@ -29,7 +30,8 @@ namespace ECS.Systems
             rnd.InitState();
             Entities
                 .WithAll<MoveOrderTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
                     ref DynamicBuffer<MoveQueueElementComponent> moveQueue, 
                     ref MoveQueueInfoComponent moveInfo, ref OrderQueueInfoComponent orderInfo,
                     ref PhysicsMass physicsMass, in Translation translation) =>
@@ -81,7 +83,7 @@ namespace ECS.Systems
                     }
                     
                     path.Dispose();
-                }).Schedule();
+                }).WithoutBurst().Schedule();
         }
     }
 }

@@ -5,9 +5,11 @@ using ECS.Other;
 using ECS.Tags;
 using Unity.Entities;
 using Unity.Rendering;
+using UnityEngine;
 
 namespace ECS.Systems
 {
+    [UpdateAfter(typeof(UnitControlSystem))]
     public class OrderQueueUpdateSystem : SystemBase
     {
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
@@ -46,6 +48,7 @@ namespace ECS.Systems
                 }).Schedule();
             
             Ecb.AddJobHandleForProducer(Dependency);
+            Ecb.Update();
         }
         
         private static ComponentType GetOrderComponentType(OrderType type)
@@ -54,6 +57,8 @@ namespace ECS.Systems
             {
                 OrderType.Move => ComponentType.ReadWrite<MoveOrderTag>(),
                 OrderType.Attack => ComponentType.ReadWrite<AttackOrderTag>(),
+                OrderType.AttackMove => ComponentType.ReadWrite<AttackMoveOrderTag>(),
+                OrderType.HoldPosition => ComponentType.ReadWrite<HoldPositionOrderTag>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }

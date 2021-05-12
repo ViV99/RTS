@@ -24,98 +24,172 @@ namespace ECS.Systems
 
         protected override void OnUpdate()
         {
-            var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
             var currentMousePosition = Utilities.GetMouseWorldPosition();
-
-            ProcessLeftButtonDown(currentMousePosition);
-            ProcessLeftButtonHeldDown(currentMousePosition);
-            ProcessLeftButtonUp(parallelWriter, currentMousePosition);
-
-            ProcessRightButtonDown(currentMousePosition);
+            
+            if (Input.GetMouseButtonDown(0))
+                ProcessLeftButtonDown(currentMousePosition);
+            else if (Input.GetMouseButton(0))
+                ProcessLeftButtonHeldDown(currentMousePosition);
+            else if (Input.GetMouseButtonUp(0))
+                ProcessLeftButtonUp(currentMousePosition);
+            else if (Input.GetMouseButtonDown(1))
+                ProcessRightButtonDown(currentMousePosition);
         }
 
         private void ProcessLeftButtonDown(float3 mousePosition)
         {
-            if (!Input.GetMouseButtonDown(0))
-                return;
-
             StartMousePosition = mousePosition;
-            GameHandler.Instance.selectionAreaTransform.position = StartMousePosition;
-            GameHandler.Instance.selectionAreaTransform.gameObject.SetActive(true);
+            CameraHandler.Instance.selectionAreaTransform.position = StartMousePosition;
+            CameraHandler.Instance.selectionAreaTransform.gameObject.SetActive(true);
         }
 
         private void ProcessLeftButtonHeldDown(float3 mousePosition)
         {
-            if (!Input.GetMouseButton(0))
-                return;
-
             var selectionAreaSize = mousePosition - StartMousePosition;
-            GameHandler.Instance.selectionAreaTransform.localScale = selectionAreaSize;
+            CameraHandler.Instance.selectionAreaTransform.localScale = selectionAreaSize;
         }
 
-        private void ProcessLeftButtonUp(EntityCommandBuffer.ParallelWriter parallelWriter, float3 mousePosition)
+        private void ProcessLeftButtonUp(float3 mousePosition)
         {
-            if (!Input.GetMouseButtonUp(0))
-                return;
-
-            GameHandler.Instance.selectionAreaTransform.gameObject.SetActive(false);
+            var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
+            CameraHandler.Instance.selectionAreaTransform.gameObject.SetActive(false);
             var lowerLeftCorner = new float2(
                 math.min(StartMousePosition.x, mousePosition.x),
                 math.min(StartMousePosition.y, mousePosition.y));
             var upperRightCorner = new float2(
                 math.max(StartMousePosition.x, mousePosition.x),
                 math.max(StartMousePosition.y, mousePosition.y));
-
-            var selectionAreaSize = math.distance(lowerLeftCorner, upperRightCorner);
-            if (selectionAreaSize < SelectionAreaMinSize)
+            if(!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift))
             {
-                lowerLeftCorner += new float2(-0.5f, -0.5f) * (SelectionAreaMinSize - selectionAreaSize);
-                upperRightCorner += new float2(0.5f, 0.5f) * (SelectionAreaMinSize - selectionAreaSize);
+                ResetSelection(parallelWriter);
+                Ecb.AddJobHandleForProducer(Dependency);
+                Ecb.Update();
+                parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
             }
+            if (math.distance(lowerLeftCorner, upperRightCorner) < SelectionAreaMinSize)
+            {
+                var entity = GetClosestEntity(mousePosition);
+                if (entity != Entity.Null)
+                    EntityManager.AddComponent(entity, ComponentType.ReadWrite<SelectedTag>());
+            }
+            else
+            {
+                SelectAllEntitiesInArea(parallelWriter, lowerLeftCorner, upperRightCorner);
+            }
+            Ecb.AddJobHandleForProducer(Dependency);
+        }
 
+        private void ResetSelection(EntityCommandBuffer.ParallelWriter parallelWriter)
+        {
             Entities
                 .WithAll<SelectedTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, in Translation translation) =>
                 {
-                    parallelWriter.RemoveComponent(entityInQueryIndex, entity, ComponentType.ReadWrite<SelectedTag>());
+                    parallelWriter.RemoveComponent(entityInQueryIndex, entity,
+                        ComponentType.ReadWrite<SelectedTag>());
                 }).Schedule();
+        }
+        
+        private Entity GetClosestEntity(float3 mousePosition)
+        {
+            var e = Entity.Null;
+            var maxScale = float.MinValue;
+            Entities
+                .ForEach((Entity entity, in Translation translation, in CompositeScale scale) =>
+                {
+                    var curScale = scale.Value.c0.x / 2;
+                    if (math.distance(translation.Value, mousePosition) < curScale && curScale > maxScale)
+                    {
+                        maxScale = curScale;
+                        e = entity;
+                    }
+                }).Run();
+            return e;
+        }
 
+        private void SelectAllEntitiesInArea(EntityCommandBuffer.ParallelWriter parallelWriter, 
+            float2 lowerLeftCorner, float2 upperRightCorner)
+        {
             Entities
                 .ForEach((Entity entity, int entityInQueryIndex, in Translation translation) =>
                 {
-                    var entityPos = translation.Value.xy;
-
-                    if (Utilities.IsInRectangle(entityPos, lowerLeftCorner, upperRightCorner))
+                    if (Utilities.IsInRectangle(translation.Value.xy, lowerLeftCorner, upperRightCorner))
                     {
-                        parallelWriter.AddComponent(entityInQueryIndex, entity, ComponentType.ReadWrite<SelectedTag>());
+                        parallelWriter.AddComponent(entityInQueryIndex, entity,
+                            ComponentType.ReadWrite<SelectedTag>());
                     }
                 }).Schedule();
-
-            Ecb.AddJobHandleForProducer(Dependency);
         }
 
         private void ProcessRightButtonDown(float3 mousePosition)
         {
-            if (!Input.GetMouseButtonDown(1))
-                return;
-            
-            // var e = GetSingleton<PrefabsComponent>().SimpleSolidPrefab;
-            // var eCopy = EntityManager.Instantiate(e);
-            // EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<SolidTag>());
-            // EntityManager.SetComponentData(eCopy, new Translation {Value = mousePosition});
-            // EntityManager.CreateEntity(ComponentType.ReadWrite<NavMeshUpdateFlag>());
-                Entities
-                .WithAll<SelectedTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, 
-                    ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
-                    ref OrderQueueInfoComponent orderInfo) =>
+            if(!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift))
+            {
+                ResetOrderQueue();
+            }
+            var entity = GetClosestEntity(mousePosition);
+            if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+            {
+                SetOrders(OrderType.AttackMove, mousePosition.xy, Entity.Null);
+            }
+            else
+            {
+                if (entity != Entity.Null && HasComponent<Player2Tag>(entity))
                 {
-                    orderQueue.Add(new OrderQueueElementComponent(
-                        OrderType.Move, 
-                        OrderState.New,
-                        Utilities.GetRoundedPoint(mousePosition.xy)));
-                    orderInfo.Count++;
+                    SetOrders(OrderType.Attack, mousePosition.xy, entity);
+                }
+                else
+                {
+                    SetOrders(OrderType.Move, mousePosition.xy, Entity.Null);
+                }
+            }
+        }
+
+        private void ResetOrderQueue()
+        {
+            Entities
+                .WithAll<SelectedTag>()
+                .ForEach((DynamicBuffer<OrderQueueElementComponent> orderQueue, ref OrderQueueInfoComponent orderInfo) =>
+                {
+                    if (orderInfo.Count == 0)
+                    {
+                        orderInfo.Count = 0;
+                        orderInfo.L = 0;
+                        orderInfo.R = 0;
+                    }
+                    else
+                    {
+                        orderInfo.Count = 1;
+                        orderInfo.R = orderInfo.L + 1;
+                        orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
+                    }
+                }).Schedule();
+        }
+
+        private void SetOrders(OrderType type, float2 movePosition, Entity target)
+        {
+            var position = Utilities.GetRoundedPoint(movePosition);
+            Entities
+                .WithAll<SelectedTag>()
+                .ForEach((DynamicBuffer<OrderQueueElementComponent> orderQueue, ref OrderQueueInfoComponent orderInfo) =>
+                {
+                    var order = new OrderQueueElementComponent(type, OrderState.New, position, target);
+                    if (orderInfo.R < orderQueue.Length)
+                    {
+                        orderQueue[orderInfo.R] = order;
+                    }
+                    else
+                    {
+                        orderQueue.Add(order);
+                    }
                     orderInfo.R = (orderInfo.R + 1) % orderQueue.Capacity;
+                    orderInfo.Count = (orderInfo.Count + 1) % orderQueue.Capacity;
+                    if (orderInfo.R == (orderInfo.L + 1) % orderQueue.Capacity 
+                        && orderInfo.Count == orderQueue.Capacity + 1) 
+                    {
+                        orderInfo.R = (orderInfo.R + 1) % orderQueue.Capacity;
+                        orderInfo.Count = (orderInfo.Count - 1) % orderQueue.Capacity;
+                    }
                 }).Schedule();
         }
     }
