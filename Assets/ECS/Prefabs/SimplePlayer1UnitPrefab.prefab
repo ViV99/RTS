@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 4181290772382853185}
   - component: {fileID: 4181290772382853198}
   - component: {fileID: 4181290772382853184}
+  - component: {fileID: 3980310833232416101}
   m_Layer: 0
-  m_Name: SimpleUnitPrefab
+  m_Name: SimplePlayer1UnitPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 4181290772382853195}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 100}
+  m_LocalScale: {x: 4, y: 4, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -98,20 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee1f27fbeb208d4b9f7448c5cc8e240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position:
-    x: 0
-    y: 0
   TurnSpeed: 0.1
   MoveSpeed: 10
-  IsMoving: 0
-  LastMoveDirection:
-    x: 0
-    y: 0
-    z: 0
-  LastStatePosition:
-    x: 0
-    y: 0
-  FramesCount: 0
 --- !u!114 &4181290772382853185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,5 +304,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c1db02f85a9e634081593b43317cefa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3980310833232416101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4181290772382853195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cc6274d2a93bd4478ce5c58e3b0c47b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

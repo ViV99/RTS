@@ -494,7 +494,7 @@ Transform:
   m_LocalScale: {x: 10, y: 10, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -51.723}
 --- !u!114 &392040047
 MonoBehaviour:
@@ -1288,7 +1288,7 @@ GameObject:
   - component: {fileID: 1590312259}
   - component: {fileID: 1590312258}
   m_Layer: 0
-  m_Name: GameHandler
+  m_Name: CameraHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1320,7 +1320,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1670032590
 GameObject:
@@ -1352,7 +1352,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 718cf400cc2940c4bbc07d858e1752f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SimpleUnitPrefab: {fileID: 4181290772382853195, guid: ca9fc7445547d684eaf6f1f1569be177, type: 3}
+  SimplePlayer1UnitPrefab: {fileID: 4181290772382853195, guid: ca9fc7445547d684eaf6f1f1569be177, type: 3}
+  SimplePlayer2UnitPrefab: {fileID: 7001250019107386345, guid: 71c85d9a40fcdaa48b5c898121f66c03, type: 3}
   SimpleSolidPrefab: {fileID: 625694991063943712, guid: f946ae3a5a75a3744b2e5f48386c0c2e, type: 3}
 --- !u!114 &1670032592
 MonoBehaviour:

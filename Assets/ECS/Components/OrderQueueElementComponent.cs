@@ -15,6 +15,8 @@ namespace ECS.Components
     {
         Move,
         Attack,
+        AttackMove,
+        HoldPosition,
     }
     
     [InternalBufferCapacity(30)]

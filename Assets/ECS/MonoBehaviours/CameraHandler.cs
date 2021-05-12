@@ -8,11 +8,11 @@ using UnityEngine;
 
 namespace ECS.MonoBehaviours
 {
-    public class GameHandler : MonoBehaviour
+    public class CameraHandler : MonoBehaviour
     {
         private const float CameraMoveSpeed = 100f;
         private const float CameraZoomSpeed = 1000f;
-        public static GameHandler Instance { get; private set; }
+        public static CameraHandler Instance { get; private set; }
 
         [SerializeField] private CameraFollow cameraFollow;
         private float3 CameraFollowPosition { get; set; }
