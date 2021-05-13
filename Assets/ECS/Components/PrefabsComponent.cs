@@ -9,5 +9,6 @@ namespace ECS.Components
         public Entity SimplePlayer2UnitPrefab;
         public Entity SimpleSolidPrefab;
         public Entity HealthBarPrefab;
+        public Entity SimpleBuilding1Prefab;
     }
 }
