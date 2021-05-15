@@ -1,5 +1,6 @@
 using ECS.Components;
 using ECS.Other;
+using ECS.Tags;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -10,28 +11,28 @@ using UnityEngine;
 
 namespace ECS.Systems
 {
-    public class MoveSystem : SystemBase
+    public class MoveWithPathSystem : SystemBase
     {
         private const float ReachedPositionDistance = 0.5f;
         
         protected override void OnUpdate()
         {
-            Entities.ForEach((
-                ref Translation translation,
-                ref MoveToComponent moveTo,
-                ref PhysicsVelocity physicsVelocity,
-                ref UnitStatsComponent stats) =>
+            Entities
+                .WithNone<ProjectileTag>()
+                .ForEach((ref Translation translation, ref MoveToComponent moveTo, ref PhysicsVelocity physicsVelocity,
+                in EntityStatsComponent stats) =>
                 {
                     if (!moveTo.IsMoving)
                         return;
                     
                     var moveToPosFloat = new float3(moveTo.Position, 0);
-                    if (math.distance(translation.Value, moveToPosFloat) > ReachedPositionDistance)
+                    var distToGoal = math.distance(translation.Value, moveToPosFloat);
+                    var distFromLast = math.distance(moveTo.LastStatePosition, translation.Value.xy);
+                    if (distToGoal > ReachedPositionDistance)
                     {
                         if (moveTo.FramesCount == 6)
                         {
-                            if (math.distance(moveTo.LastStatePosition, translation.Value.xy) 
-                                < ReachedPositionDistance / 7)
+                            if (distFromLast < ReachedPositionDistance / 7)
                                 moveTo.IsMoving = false;
                             moveTo.LastStatePosition = translation.Value.xy;
                             moveTo.FramesCount = 0;

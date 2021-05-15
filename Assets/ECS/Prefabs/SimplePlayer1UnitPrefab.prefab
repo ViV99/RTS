@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 4181290772382853185}
   - component: {fileID: 4181290772382853198}
   - component: {fileID: 4181290772382853184}
-  - component: {fileID: 3980310833232416101}
   - component: {fileID: 3553864165779962404}
+  - component: {fileID: -3363567627047142008}
+  - component: {fileID: 2529229532429111382}
   m_Layer: 0
   m_Name: SimplePlayer1UnitPrefab
   m_TagString: Untagged
@@ -292,18 +293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1db02f85a9e634081593b43317cefa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3980310833232416101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4181290772382853195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cc6274d2a93bd4478ce5c58e3b0c47b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3553864165779962404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,10 +306,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 0
-  Health: 0
+  CurrentHealth: 0
   Armor: 0
   TurnSpeed: 0.1
   MoveSpeed: 10
-  Damage: 0
-  ReloadTime: 0
+  Damage: 10
+  ProjectileSpeed: 120
+  ReloadTime: 120
   CurrentLoad: 0
+  AttackRange: 40
+  SightRange: 40
+--- !u!114 &-3363567627047142008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4181290772382853195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a90e6613c2b0f74abef427078067859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ProjectilePrefab: {fileID: 6374799424124235615, guid: 60bac6dfcbbfa8e48bc528ab96c90fa3, type: 3}
+--- !u!114 &2529229532429111382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4181290772382853195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ecc481eaa541c4d908581ca2f8ce22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerNumber: 1

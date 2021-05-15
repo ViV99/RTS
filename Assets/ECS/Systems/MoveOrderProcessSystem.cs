@@ -19,29 +19,31 @@ namespace ECS.Systems
     [UpdateAfter(typeof(OrderQueueUpdateSystem))]
     public class MoveOrderProcessSystem : SystemBase
     {
-        private const float ReachedPositionDistance = 10f;
+        private const float ReachedPositionDistance = 5f;
+        private uint frameCount;
 
         protected override void OnUpdate()
         {
             var navMeshHandler = GetSingletonEntity<NavMeshInfoComponent>();
             var navMesh = GetBuffer<NavMeshElementComponent>(navMeshHandler);
             var info = GetComponent<NavMeshInfoComponent>(navMeshHandler);
-            var rnd = new Random();
-            rnd.InitState();
+            var frame = ++frameCount;
             Entities
                 .WithAll<MoveOrderTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, 
-                    ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
+                .ForEach((Entity entity, int entityInQueryIndex, ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
                     ref DynamicBuffer<MoveQueueElementComponent> moveQueue, 
                     ref MoveQueueInfoComponent moveInfo, ref OrderQueueInfoComponent orderInfo,
                     ref PhysicsMass physicsMass, in Translation translation) =>
                 {
+                    var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + frame);
+                    var r = rnd.NextInt(1, 10);
                     switch (orderQueue[orderInfo.L].State)
                     {
                         case OrderState.Complete:
                             return;
                         case OrderState.New:
-                            orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
+                            if (r == 1)
+                                orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
                             physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                             break;
                         case OrderState.InProgress 
@@ -50,15 +52,17 @@ namespace ECS.Systems
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
                             physicsMass.InverseMass = 1;
                             return;
-                        case OrderState.InProgress when moveInfo.Index != moveInfo.Count:
+                        case OrderState.InProgress when moveInfo.Index < moveInfo.Count:
                             return;
                     }
-                    
+                    if (r != 1)
+                        return;
                     var path = Utilities.AStar(
                         Utilities.GetRoundedPoint(translation.Value.xy),
                         orderQueue[orderInfo.L].MovePosition,
                         GetComponent<CompositeScale>(entity).Value.c0.x,
                         info.Corners,
+                        rnd,
                         info.MovesBlobAssetRef,
                         navMesh);
 
@@ -84,6 +88,7 @@ namespace ECS.Systems
                     
                     path.Dispose();
                 }).WithoutBurst().Schedule();
+            CompleteDependency();
         }
     }
 }

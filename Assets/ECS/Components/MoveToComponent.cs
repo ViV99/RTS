@@ -11,5 +11,6 @@ namespace ECS.Components
         public float3 LastMoveDirection;
         public float2 LastStatePosition;
         public int FramesCount;
+        public Entity Target;
     }
 }

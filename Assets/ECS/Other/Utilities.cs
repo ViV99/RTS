@@ -67,7 +67,7 @@ namespace ECS.Other
             }
         }
         // Оценка расстояния между двумя точками - evalFunc
-        public static NativeList<int2> AStar(int2 start, int2 goal, float scale, int2x2 corners,
+        public static NativeList<int2> AStar(int2 start, int2 goal, float scale, int2x2 corners, Random rnd,
             BlobAssetReference<MovesBlobAsset> movesBlobAssetRef, DynamicBuffer<NavMeshElementComponent> navMesh)
         {
             const int maxIterCount = 1488;
@@ -85,10 +85,8 @@ namespace ECS.Other
             //  "Очередь" перебора с сортировкой по минимуму счёта
             var q = new NativeBinaryHeap<AStarHeapNode>(Allocator.Temp);
             q.Insert(new AStarHeapNode(math.distance(start, goal), start));
-            var rnd = new Random();
-            rnd.InitState();
-             while (q.Count != 0 && iterCount < maxIterCount)
-             {
+            while (q.Count != 0 && iterCount < maxIterCount)
+            {
                  var node = q.ExtractMin();
                  if (used.Contains(node.Vertex))
                      continue;
@@ -117,16 +115,16 @@ namespace ECS.Other
                      // Оценка счёта
                      var tekCost = movesBlobAssetRef.Value.MoveArray[i].Cost;
                      //Х*йня
-                     var randomState = rnd.NextInt(0, 2);
-                     switch (randomState)
-                     {
-                         case 0:
-                             tekCost /= 1.5f;
-                             break;
-                         case 1:
-                             tekCost *= 1.25f;
-                             break;
-                     }
+                      var randomState = rnd.NextInt(0, 3);
+                      switch (randomState)
+                      {
+                          case 0:
+                              tekCost /= 1.5f;
+                              break;
+                          case 1:
+                              tekCost *= 1.25f;
+                              break;
+                      }
                      var newScore = d[node.Vertex] + tekCost + evaluation;
                      
                      // Постобработка, применение результатов
@@ -139,7 +137,7 @@ namespace ECS.Other
                      q.Insert(new AStarHeapNode(newScore, u));
                  }
                  iterCount++;
-             }
+            }
             var result = new NativeList<int2>(Allocator.Temp) {end};
             var tek = end;
             while (!tek.Equals(start))

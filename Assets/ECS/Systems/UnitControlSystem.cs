@@ -134,7 +134,9 @@ namespace ECS.Systems
             }
             else
             {
-                if (entity != Entity.Null && HasComponent<Player2Tag>(entity))
+                if (entity != Entity.Null
+                    && HasComponent<OwnerComponent>(entity) 
+                    && GetComponent<OwnerComponent>(entity).PlayerNumber == 2)
                 {
                     SetOrders(OrderType.Attack, mousePosition.xy, entity);
                 }

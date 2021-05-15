@@ -14,7 +14,7 @@ namespace ECS.Systems
             Entities.ForEach((
                 ref MoveToComponent moveTo,
                 ref Rotation rotation,
-                ref UnitStatsComponent stats) =>
+                ref EntityStatsComponent stats) =>
             {
                 if (!moveTo.IsMoving)
                     return;
