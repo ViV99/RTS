@@ -1355,6 +1355,7 @@ MonoBehaviour:
   SimplePlayer1UnitPrefab: {fileID: 4181290772382853195, guid: ca9fc7445547d684eaf6f1f1569be177, type: 3}
   SimplePlayer2UnitPrefab: {fileID: 7001250019107386345, guid: 71c85d9a40fcdaa48b5c898121f66c03, type: 3}
   SimpleSolidPrefab: {fileID: 625694991063943712, guid: f946ae3a5a75a3744b2e5f48386c0c2e, type: 3}
+  SelectedLabelPrefab: {fileID: 2965420836402034448, guid: 3ab57f290fc197441816fedf06ca088c, type: 3}
 --- !u!114 &1670032592
 MonoBehaviour:
   m_ObjectHideFlags: 0

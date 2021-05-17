@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.6132076, g: 0.025453873, b: 0.025453873, a: 1}
   m_FlipX: 0
@@ -329,6 +329,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ProjectilePrefab: {fileID: 6374799424124235615, guid: 60bac6dfcbbfa8e48bc528ab96c90fa3, type: 3}
+  HealthBarPrefab: {fileID: 0}
+  SelectedLabelPrefab: {fileID: 0}
 --- !u!114 &150268207597652593
 MonoBehaviour:
   m_ObjectHideFlags: 0

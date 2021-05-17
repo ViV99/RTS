@@ -8,5 +8,6 @@ namespace ECS.Components
         public Entity SimplePlayer1UnitPrefab;
         public Entity SimplePlayer2UnitPrefab;
         public Entity SimpleSolidPrefab;
+        public Entity SelectedLabelPrefab;
     }
 }

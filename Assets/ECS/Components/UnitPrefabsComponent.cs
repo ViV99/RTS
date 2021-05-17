@@ -6,5 +6,7 @@ namespace ECS.Components
     public struct UnitPrefabsComponent : IComponentData
     {
         public Entity ProjectilePrefab;
+        public Entity HealthBarPrefab;
+        public Entity SelectedLabelPrefab;
     }
 }

@@ -70,23 +70,41 @@ namespace ECS.Systems
             {
                 var entity = GetClosestEntity(mousePosition);
                 if (entity != Entity.Null)
+                {
                     EntityManager.AddComponent(entity, ComponentType.ReadWrite<SelectedTag>());
+                    var e = EntityManager.GetComponentData<UnitPrefabsComponent>(entity);
+
+                     if (e.SelectedLabelPrefab == Entity.Null)
+                     {
+                         var query = EntityManager.CreateEntityQuery(ComponentType.ReadWrite<PrefabsComponent>());
+                         e.SelectedLabelPrefab = EntityManager.Instantiate(query.GetSingleton<PrefabsComponent>().SelectedLabelPrefab);
+                         EntityManager.SetComponentData(entity, e);    
+                     }
+                    
+                }
+
             }
             else
             {
                 SelectAllEntitiesInArea(parallelWriter, lowerLeftCorner, upperRightCorner);
             }
             Ecb.AddJobHandleForProducer(Dependency);
+            Ecb.Update();
         }
 
         private void ResetSelection(EntityCommandBuffer.ParallelWriter parallelWriter)
         {
             Entities
                 .WithAll<SelectedTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, in Translation translation) =>
+                .ForEach((Entity entity, 
+                    int entityInQueryIndex, 
+                    ref UnitPrefabsComponent unitPrefabsComponent, 
+                    in Translation translation) =>
                 {
                     parallelWriter.RemoveComponent(entityInQueryIndex, entity,
                         ComponentType.ReadWrite<SelectedTag>());
+                    //parallelWriter.DestroyEntity(entityInQueryIndex, unitPrefabsComponent.SelectedLabelPrefab);
+                    //unitPrefabsComponent.SelectedLabelPrefab = Entity.Null;
                 }).Schedule();
         }
         
@@ -110,13 +128,22 @@ namespace ECS.Systems
         private void SelectAllEntitiesInArea(EntityCommandBuffer.ParallelWriter parallelWriter, 
             float2 lowerLeftCorner, float2 upperRightCorner)
         {
+            var prefabs = GetSingleton<PrefabsComponent>();
             Entities
-                .ForEach((Entity entity, int entityInQueryIndex, in Translation translation) =>
+                .ForEach((Entity entity, 
+                    int entityInQueryIndex, 
+                    ref UnitPrefabsComponent unitPrefabsComponent,
+                    in Translation translation) =>
                 {
                     if (Utilities.IsInRectangle(translation.Value.xy, lowerLeftCorner, upperRightCorner))
                     {
-                        parallelWriter.AddComponent(entityInQueryIndex, entity,
-                            ComponentType.ReadWrite<SelectedTag>());
+                        parallelWriter.AddComponent(entityInQueryIndex, entity, ComponentType.ReadWrite<SelectedTag>());
+                        if (unitPrefabsComponent.SelectedLabelPrefab == Entity.Null)
+                        {
+                            
+                            //unitPrefabsComponent.SelectedLabelPrefab = parallelWriter.Instantiate(entityInQueryIndex, prefabs.SelectedLabelPrefab);
+                        }
+                        
                     }
                 }).Schedule();
         }

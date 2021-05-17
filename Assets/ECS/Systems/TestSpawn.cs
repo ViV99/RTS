@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ECS.Systems
 {
@@ -16,7 +17,7 @@ namespace ECS.Systems
             if (cnt > 0)
                 return;
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var e = GetSingleton<PrefabsComponent>().SimplePlayer1UnitPrefab;
                 var eCopy = EntityManager.Instantiate(e);
@@ -25,10 +26,6 @@ namespace ECS.Systems
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<OrderQueueInfoComponent>());
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveQueueInfoComponent>());
                 EntityManager.AddComponent(eCopy, ComponentType.ReadWrite<MoveToComponent>());
-                EntityManager.AddComponentData(eCopy, new HealthBarReferenceComponent
-                {
-                    HealthBarEntity = Entity.Null
-                });
             }
             for (var i = 0; i < 2; i++)
             {
