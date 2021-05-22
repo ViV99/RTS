@@ -11,6 +11,7 @@ namespace ECS.Systems
 {
     public class MoveWithTargetSystem : SystemBase
     {
+        private const float ReachedPositionDistance = 1f;
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
 
         protected override void OnCreate()
@@ -21,7 +22,6 @@ namespace ECS.Systems
         protected override void OnUpdate()
         {
             var parallelWriter = Ecb.CreateCommandBuffer();
-            
             Entities
                 .WithAll<ProjectileTag>()
                 .ForEach((Entity entity, 
@@ -34,10 +34,10 @@ namespace ECS.Systems
                         parallelWriter.DestroyEntity(entity);
                         return;
                     }
+                    var targetStats = GetComponent<EntityStatsComponent>(moveTo.Target);
                     if (math.distance(GetComponent<Translation>(moveTo.Target).Value, translation.Value)
-                        < GetComponent<CompositeScale>(moveTo.Target).Value.c0.x)
+                        < ReachedPositionDistance)
                     {
-                        var targetStats = GetComponent<EntityStatsComponent>(moveTo.Target);
                         targetStats = targetStats.WithHealth(targetStats.CurrentHealth
                                                              - math.max(stats.Damage - targetStats.Armor, 1));
 

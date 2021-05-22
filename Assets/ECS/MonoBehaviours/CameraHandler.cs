@@ -10,8 +10,8 @@ namespace ECS.MonoBehaviours
 {
     public class CameraHandler : MonoBehaviour
     {
-        private const float CameraMoveSpeed = 100f;
-        private const float CameraZoomSpeed = 1000f;
+        private float CameraMoveSpeed = 80f;
+        private float CameraZoomSpeed;
         public static CameraHandler Instance { get; private set; }
 
         [SerializeField] private CameraFollow cameraFollow;
@@ -19,21 +19,23 @@ namespace ECS.MonoBehaviours
         private float CameraFollowZoom { get; set; }
 
         public Transform selectionAreaTransform;
-        
+
+        public EntityManager EntityManager { get; set; }
+
         private void Awake()
         {
             Instance = this;
+            EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
 
         private void Start()
         {
-            CameraFollowZoom = 8f;
+            CameraFollowZoom = 80f;
             cameraFollow.Setup(() => CameraFollowPosition, () => CameraFollowZoom, true, true);
-            
         }
 
         
-        void Update()
+        private void Update()
         {
             HandleCamera();
         }
@@ -63,7 +65,13 @@ namespace ECS.MonoBehaviours
 
             moveDir = moveDir.normalized;
             CameraFollowPosition += (float3)moveDir * CameraMoveSpeed * Time.deltaTime;
-
+            
+            var mapCorners = EntityManager
+                .CreateEntityQuery(ComponentType.ReadOnly<NavMeshInfoComponent>())
+                .GetSingleton<NavMeshInfoComponent>().Corners;
+            CameraFollowPosition = new float3(
+                math.clamp(CameraFollowPosition.xy, mapCorners.c0, mapCorners.c1),
+                0);
             if (Input.mouseScrollDelta.y > 0)
             {
                 CameraFollowZoom -= CameraZoomSpeed * Time.deltaTime;
@@ -73,7 +81,9 @@ namespace ECS.MonoBehaviours
                 CameraFollowZoom += CameraZoomSpeed * Time.deltaTime;
             }
 
-            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 1f, 100f);
+            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 10f, 400f);
+            CameraZoomSpeed = CameraFollowZoom * 10;
+            CameraMoveSpeed = CameraFollowZoom;
         }
     }
 }

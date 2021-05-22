@@ -1,14 +1,11 @@
-using System.Diagnostics;
 using ECS.Components;
 using ECS.Flags;
 using ECS.Other;
 using ECS.Tags;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace ECS.Systems
@@ -17,24 +14,30 @@ namespace ECS.Systems
     {
         protected override void OnStartRunning()
         {
-            RaiseRoadMapUpdateFlag();
+            RaiseNavMeshUpdateFlag();
         }
 
         protected override void OnUpdate()
         {
             if (!TryGetSingletonEntity<NavMeshUpdateFlag>(out var flagEntity))
                 return;
-
             EntityManager.DestroyEntity(flagEntity);
-            
             var navMeshHandler = GetSingletonEntity<NavMeshInfoComponent>();
             var navMesh = GetBuffer<NavMeshElementComponent>(navMeshHandler);
             var info = GetComponent<NavMeshInfoComponent>(navMeshHandler);
+            SolidBfs(navMesh, info);
+            BuildingBfs(navMesh, info);
+            CompleteDependency();
+        }
+
+        private void SolidBfs(DynamicBuffer<NavMeshElementComponent> navMesh, NavMeshInfoComponent info)
+        {
             Entities
                 .WithAll<SolidTag>()
-                .ForEach((in Translation translation, in CompositeScale scale, in Rotation rotation) =>
+                .ForEach((Entity entity, in Translation translation, in EntityStatsComponent stats, 
+                    in Rotation rotation) =>
                 {
-                    var rectangle = new Utilities.Rectanglef2(translation.Value.xy, scale.Value.c0.x, rotation.Value);
+                    var rectangle = new Utilities.Rectanglef2(translation.Value.xy, stats.BaseRadius * 2, rotation.Value);
                     var used = new NativeHashSet<int2>(1, Allocator.Temp) {Utilities.GetRoundedPoint(rectangle.O)};
                     var q = new NativeList<int2>(Allocator.Temp) {Utilities.GetRoundedPoint(rectangle.O)};
                     var l = 0;
@@ -49,11 +52,19 @@ namespace ECS.Systems
                             
                             var dist = rectangle.GDFromPointToRectangle(u);
                             
-                            var index = Utilities.GetFlattenedIndex(u - info.Corners.c0, info.Corners.c1.x - info.Corners.c0.x + 1);
+                            var index = Utilities.GetFlattenedIndex(u - info.Corners.c0, 
+                                info.Corners.c1.x - info.Corners.c0.x + 1);
                             
-                            if (navMesh[index].Distance > dist)
+                            if (!HasComponent<Translation>(navMesh[index].ClosestSolid) 
+                                || navMesh[index].DistanceToSolid + Utilities.EPS > dist)
                             {
-                                navMesh[index] = new NavMeshElementComponent {Distance = dist};
+                                navMesh[index] = new NavMeshElementComponent
+                                {
+                                    DistanceToSolid = dist,
+                                    ClosestSolid = entity,
+                                    DistanceToBuilding = navMesh[index].DistanceToBuilding,
+                                    ClosestBuilding = navMesh[index].ClosestBuilding
+                                };
                                 q.Add(u);
                                 used.Add(u);
                             }
@@ -62,10 +73,56 @@ namespace ECS.Systems
                     q.Dispose();
                     used.Dispose();
                 }).Schedule();
-            CompleteDependency();
+        }
+        
+        private void BuildingBfs(DynamicBuffer<NavMeshElementComponent> navMesh, NavMeshInfoComponent info)
+        {
+            Entities
+                .WithAll<BuildingTag>()
+                .ForEach((Entity entity, in Translation translation, in EntityStatsComponent stats, 
+                    in Rotation rotation, in OwnerComponent owner) =>
+                {
+                    if (owner.PlayerNumber == 2)
+                        return;
+                    var rectangle = new Utilities.Rectanglef2(translation.Value.xy, stats.BaseRadius * 2, rotation.Value);
+                    var used = new NativeHashSet<int2>(1, Allocator.Temp) {Utilities.GetRoundedPoint(rectangle.O)};
+                    var q = new NativeList<int2>(Allocator.Temp) {Utilities.GetRoundedPoint(rectangle.O)};
+                    var l = 0;
+                    while (l != q.Length)
+                    {
+                        var v = q[l++];
+                        for (var i = 0; i < 4; i++)
+                        {
+                            var u = v + info.MovesBlobAssetRef.Value.MoveArray[i].Delta;
+                            if (used.Contains(u) || !Utilities.IsInRectangle(u, info.Corners.c0, info.Corners.c1))
+                                continue;
+                            
+                            var dist = rectangle.GDFromPointToRectangle(u);
+                            
+                            var index = Utilities.GetFlattenedIndex(u - info.Corners.c0, 
+                                info.Corners.c1.x - info.Corners.c0.x + 1);
+                            
+                            if (!HasComponent<Translation>(navMesh[index].ClosestBuilding) 
+                                || navMesh[index].DistanceToBuilding + Utilities.EPS > dist)
+                            {
+                                navMesh[index] = new NavMeshElementComponent
+                                {
+                                    DistanceToSolid = navMesh[index].DistanceToSolid,
+                                    ClosestSolid = navMesh[index].ClosestSolid,
+                                    DistanceToBuilding = dist,
+                                    ClosestBuilding = entity
+                                };
+                                q.Add(u);
+                                used.Add(u);
+                            }
+                        }
+                    }
+                    q.Dispose();
+                    used.Dispose();
+                }).Schedule();
         }
 
-        private void RaiseRoadMapUpdateFlag()
+        public void RaiseNavMeshUpdateFlag()
         {
            EntityManager.CreateEntity(ComponentType.ReadWrite<NavMeshUpdateFlag>());
         }

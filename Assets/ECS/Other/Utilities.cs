@@ -67,10 +67,10 @@ namespace ECS.Other
             }
         }
         // Оценка расстояния между двумя точками - evalFunc
-        public static NativeList<int2> AStar(int2 start, int2 goal, float scale, int2x2 corners, Random rnd,
+        public static NativeList<int2> AStar(int2 start, int2 goal, float unitRadius, int2x2 corners, Random rnd,
             BlobAssetReference<MovesBlobAsset> movesBlobAssetRef, DynamicBuffer<NavMeshElementComponent> navMesh)
         {
-            const int maxIterCount = 1488;
+            const int maxIterCount = 1000;
             var iterCount = 0;
             var end = start;
             var minEval = float.MaxValue;
@@ -101,7 +101,7 @@ namespace ECS.Other
                      // Применение хода и проверка на возможность этого хода
                      var u = node.Vertex + movesBlobAssetRef.Value.MoveArray[i].Delta;
                      var index = GetFlattenedIndex(u - corners.c0, corners.c1.x - corners.c0.x + 1);
-                     if (!IsInRectangle(u, corners.c0, corners.c1) || navMesh[index].Distance < scale / 2) 
+                     if (!IsInRectangle(u, corners.c0, corners.c1) || navMesh[index].DistanceToSolid < unitRadius) 
                          continue;
                      
                      // Эвристика против ПФа в препятствие
@@ -115,16 +115,16 @@ namespace ECS.Other
                      // Оценка счёта
                      var tekCost = movesBlobAssetRef.Value.MoveArray[i].Cost;
                      //Х*йня
-                      var randomState = rnd.NextInt(0, 3);
-                      switch (randomState)
-                      {
-                          case 0:
-                              tekCost /= 1.5f;
-                              break;
-                          case 1:
-                              tekCost *= 1.25f;
-                              break;
-                      }
+                      // var randomState = rnd.NextInt(0, 3);
+                      // switch (randomState)
+                      // {
+                      //     case 0:
+                      //         tekCost /= 1.5f;
+                      //         break;
+                      //     case 1:
+                      //         tekCost *= 1.25f;
+                      //         break;
+                      // }
                      var newScore = d[node.Vertex] + tekCost + evaluation;
                      
                      // Постобработка, применение результатов

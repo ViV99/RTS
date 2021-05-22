@@ -25,7 +25,7 @@ namespace ECS.Systems.Conversion
                 Corners = corners,
                 MovesBlobAssetRef = movesBlobAssetReference
             });
-            var navMeshBuffer = DstEntityManager.AddBuffer<NavMeshElementComponent>(navMeshHandler).Reinterpret<float>();
+            var navMeshBuffer = DstEntityManager.AddBuffer<NavMeshElementComponent>(navMeshHandler);
             InitNavMeshBuffer(navMeshBuffer, corners);
         }
 
@@ -70,12 +70,18 @@ namespace ECS.Systems.Conversion
             return corners;
         }
         
-        private void InitNavMeshBuffer(DynamicBuffer<float> navMeshBuffer, int2x2 corners)
+        private void InitNavMeshBuffer(DynamicBuffer<NavMeshElementComponent> navMeshBuffer, int2x2 corners)
         {
             navMeshBuffer.ResizeUninitialized((corners.c1.x - corners.c0.x + 1) * (corners.c1.y - corners.c0.y + 1));
             for (var i = 0; i < navMeshBuffer.Length; i++)
             {
-                navMeshBuffer[i] = float.MaxValue;
+                navMeshBuffer[i] = new NavMeshElementComponent
+                {
+                    DistanceToBuilding = float.MaxValue,
+                    ClosestBuilding = Entity.Null,
+                    DistanceToSolid = float.MaxValue,
+                    ClosestSolid = Entity.Null,
+                };
             }
         }
     }

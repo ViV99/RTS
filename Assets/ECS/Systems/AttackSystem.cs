@@ -1,6 +1,7 @@
 using ECS.Components;
 using ECS.Tags;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -19,10 +20,12 @@ namespace ECS.Systems
         {
             var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
             Entities
-                .ForEach((Entity entity, int entityInQueryIndex, ref AttackTargetComponent target, 
-                    ref EntityStatsComponent stats, in UnitPrefabsComponent prefabs, in Translation translation,
-                    in OwnerComponent owner) =>
+                .ForEach((int entityInQueryIndex, ref AttackTargetComponent target, 
+                    ref EntityStatsComponent stats, ref MoveToComponent moveTo, in UnitPrefabsComponent prefabs, 
+                    in Translation translation, in Rotation rotation,in OwnerComponent owner) =>
                 {
+                    moveTo.LastMoveDirection = math.normalizesafe(GetComponent<Translation>(target.Target).Value
+                                                                  - translation.Value);
                     stats.CurrentLoad++;
                     if (stats.ReloadTime > stats.CurrentLoad) 
                         return;
@@ -37,6 +40,7 @@ namespace ECS.Systems
                         AttackRange = stats.AttackRange
                     });
                     parallelWriter.SetComponent(entityInQueryIndex, projectile, translation);
+                    parallelWriter.SetComponent(entityInQueryIndex, projectile, rotation);
                     parallelWriter.AddComponent(entityInQueryIndex, projectile, new MoveToComponent
                     {
                         IsMoving = true,

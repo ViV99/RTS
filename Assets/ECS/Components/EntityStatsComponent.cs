@@ -6,6 +6,8 @@ namespace ECS.Components
     [GenerateAuthoringComponent]
     public struct EntityStatsComponent : IComponentData
     {
+        public float BaseRadius;
+        public float BaseMass;
         public float MaxHealth;
         public float CurrentHealth;
         public float Armor;
@@ -17,11 +19,14 @@ namespace ECS.Components
         public int CurrentLoad;
         public float AttackRange;
         public float SightRange;
+        public int SpawnCost;
+        public int SpawnTime;
 
         public EntityStatsComponent WithHealth(float health)
         {
             return new EntityStatsComponent
             {
+                BaseRadius = BaseRadius,
                 MaxHealth = MaxHealth,
                 CurrentHealth = health,
                 Armor = Armor,

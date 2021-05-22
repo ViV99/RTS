@@ -1,8 +1,5 @@
 using ECS.Components;
-using ECS.Other;
 using ECS.Tags;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -20,7 +17,7 @@ namespace ECS.Systems
             Entities
                 .WithNone<ProjectileTag>()
                 .ForEach((ref Translation translation, ref MoveToComponent moveTo, ref PhysicsVelocity physicsVelocity,
-                in EntityStatsComponent stats) =>
+                    in EntityStatsComponent stats) =>
                 {
                     if (!moveTo.IsMoving)
                         return;

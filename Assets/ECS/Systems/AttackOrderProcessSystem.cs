@@ -25,7 +25,6 @@ namespace ECS.Systems
         protected override void OnUpdate()
         {
             var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
-            var manager = EntityManager;
             var navMeshHandler = GetSingletonEntity<NavMeshInfoComponent>();
             var navMesh = GetBuffer<NavMeshElementComponent>(navMeshHandler);
             var info = GetComponent<NavMeshInfoComponent>(navMeshHandler);
@@ -33,8 +32,8 @@ namespace ECS.Systems
             Entities
                 .WithAll<AttackOrderTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, 
-                    ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
-                    ref DynamicBuffer<MoveQueueElementComponent> moveQueue, 
+                    DynamicBuffer<OrderQueueElementComponent> orderQueue, 
+                    DynamicBuffer<MoveQueueElementComponent> moveQueue, 
                     ref MoveQueueInfoComponent moveInfo, ref PhysicsMass physicsMass, 
                     in Translation translation, in EntityStatsComponent stats) =>
                 {
@@ -45,7 +44,7 @@ namespace ECS.Systems
                     {
                         orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
                         parallelWriter.RemoveComponent<AttackTargetComponent>(entityInQueryIndex, entity);
-                        physicsMass.InverseMass = 1;
+                        //physicsMass.InverseMass = 1;
                         return;
                     }
                     var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + frame);
@@ -56,7 +55,7 @@ namespace ECS.Systems
                     {
                         if (r == 1)
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
-                        physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
+                        //physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                     }    
                     else if (orderQueue[orderInfo.L].State == OrderState.InProgress)
                     {
@@ -85,15 +84,16 @@ namespace ECS.Systems
                     var path = Utilities.AStar(
                         Utilities.GetRoundedPoint(translation.Value.xy),
                         roundedTargetPosition,
-                        GetComponent<CompositeScale>(entity).Value.c0.x,
+                        stats.BaseRadius,
                         info.Corners,
                         rnd,
                         info.MovesBlobAssetRef,
                         navMesh);
             
-                    if (!path[0].Equals(roundedTargetPosition))
+                    if (path[0].Equals(path[path.Length - 1]))
                     {
-                        orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithMovePosition(path[0]);
+                        orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
+                        return;
                     }
                     
                     var size = math.min(path.Length, 100);
@@ -112,7 +112,7 @@ namespace ECS.Systems
                     }
                     
                     path.Dispose();
-                }).WithoutBurst().Schedule();
+                }).Schedule();
             CompleteDependency();
         }
     }

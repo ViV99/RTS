@@ -30,11 +30,13 @@ namespace ECS.Systems
             var frame = ++frameCount;
             Entities
                 .WithAll<MoveOrderTag>()
-                .ForEach((Entity entity, int entityInQueryIndex, ref DynamicBuffer<OrderQueueElementComponent> orderQueue, 
-                    ref DynamicBuffer<MoveQueueElementComponent> moveQueue, 
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    DynamicBuffer<OrderQueueElementComponent> orderQueue, 
+                    DynamicBuffer<MoveQueueElementComponent> moveQueue, 
                     ref MoveQueueInfoComponent moveInfo, ref OrderQueueInfoComponent orderInfo,
                     ref PhysicsMass physicsMass, in Translation translation) =>
                 {
+                    var stats = GetComponent<EntityStatsComponent>(entity);
                     var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + frame);
                     var r = rnd.NextInt(1, 10);
                     switch (orderQueue[orderInfo.L].State)
@@ -44,13 +46,13 @@ namespace ECS.Systems
                         case OrderState.New:
                             if (r == 1)
                                 orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
-                            physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
+                            //physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                             break;
                         case OrderState.InProgress 
                             when math.distance(translation.Value.xy, orderQueue[orderInfo.L].MovePosition) 
                                  < ReachedPositionDistance:
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
-                            physicsMass.InverseMass = 1;
+                            //physicsMass.InverseMass = 1 / stats.BaseMass;
                             return;
                         case OrderState.InProgress when moveInfo.Index < moveInfo.Count:
                             return;
@@ -60,15 +62,16 @@ namespace ECS.Systems
                     var path = Utilities.AStar(
                         Utilities.GetRoundedPoint(translation.Value.xy),
                         orderQueue[orderInfo.L].MovePosition,
-                        GetComponent<CompositeScale>(entity).Value.c0.x,
+                        stats.BaseRadius,
                         info.Corners,
                         rnd,
                         info.MovesBlobAssetRef,
                         navMesh);
-
-                    if (!path[0].Equals(orderQueue[orderInfo.L].MovePosition))
+                    
+                    if (path[0].Equals(path[path.Length - 1]))
                     {
-                        orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithMovePosition(path[0]);
+                        orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
+                        return;
                     }
                     
                     var size = math.min(path.Length, 100);
@@ -87,7 +90,7 @@ namespace ECS.Systems
                     }
                     
                     path.Dispose();
-                }).WithoutBurst().Schedule();
+                }).Schedule();
             CompleteDependency();
         }
     }

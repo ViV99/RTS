@@ -191,7 +191,7 @@ MonoBehaviour:
     m_Friction:
       m_Override: 0
       m_Value:
-        Value: 0.5
+        Value: 0
         CombineMode: 0
     m_Restitution:
       m_Override: 0
@@ -305,17 +305,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0912f59d1a7221418279d200f0c9a24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 1000
-  CurrentHealth: 1000
+  BaseRadius: 2
+  MaxHealth: 10000
+  CurrentHealth: 10000
   Armor: 1000
   TurnSpeed: 0.1
   MoveSpeed: 15
-  Damage: 0
-  ProjectileSpeed: 0
-  ReloadTime: 0
+  Damage: 1
+  ProjectileSpeed: 50
+  ReloadTime: 50
   CurrentLoad: 0
-  AttackRange: 0
-  SightRange: 0
+  AttackRange: 50
+  SightRange: 60
+  SpawnCost: 0
+  SpawnTime: 0
 --- !u!114 &-1502344294897813406
 MonoBehaviour:
   m_ObjectHideFlags: 0

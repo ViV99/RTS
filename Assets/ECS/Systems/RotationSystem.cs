@@ -16,9 +16,6 @@ namespace ECS.Systems
                 ref Rotation rotation,
                 ref EntityStatsComponent stats) =>
             {
-                if (!moveTo.IsMoving)
-                    return;
-            
                 var directionQuaternion = quaternion.Euler(
                     0,
                     0,

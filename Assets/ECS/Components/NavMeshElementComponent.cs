@@ -5,6 +5,9 @@ namespace ECS.Components
 {
     public struct NavMeshElementComponent : IBufferElementData
     {
-        public float Distance;
+        public float DistanceToSolid;
+        public Entity ClosestSolid;
+        public float DistanceToBuilding;
+        public Entity ClosestBuilding;
     }
 }

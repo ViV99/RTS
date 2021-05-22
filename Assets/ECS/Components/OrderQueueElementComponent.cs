@@ -16,6 +16,7 @@ namespace ECS.Components
         Move,
         Attack,
         AttackMove,
+        Spawn,
         HoldPosition,
     }
     
@@ -48,6 +49,11 @@ namespace ECS.Components
         public OrderQueueElementComponent WithMovePosition(int2 movePosition)
         {
             return new OrderQueueElementComponent(Type, State, movePosition, Target);
+        }
+        
+        public OrderQueueElementComponent WithTarget(Entity target)
+        {
+            return new OrderQueueElementComponent(Type, State, MovePosition, target);
         }
     }
 }

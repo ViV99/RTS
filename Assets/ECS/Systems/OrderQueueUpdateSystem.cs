@@ -59,6 +59,7 @@ namespace ECS.Systems
                 OrderType.Attack => ComponentType.ReadWrite<AttackOrderTag>(),
                 OrderType.AttackMove => ComponentType.ReadWrite<AttackMoveOrderTag>(),
                 OrderType.HoldPosition => ComponentType.ReadWrite<HoldPositionOrderTag>(),
+                OrderType.Spawn => ComponentType.ReadWrite<SpawnOrderTag>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
