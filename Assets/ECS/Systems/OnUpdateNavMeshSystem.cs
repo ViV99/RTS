@@ -5,6 +5,7 @@ using ECS.Tags;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using Debug = UnityEngine.Debug;
 
@@ -35,7 +36,7 @@ namespace ECS.Systems
             Entities
                 .WithAll<SolidTag>()
                 .ForEach((Entity entity, in Translation translation, in EntityStatsComponent stats, 
-                    in Rotation rotation) =>
+                    in Rotation rotation, in PhysicsCollider collider) =>
                 {
                     var rectangle = new Utilities.Rectanglef2(translation.Value.xy, stats.BaseRadius * 2, rotation.Value);
                     var used = new NativeHashSet<int2>(1, Allocator.Temp) {Utilities.GetRoundedPoint(rectangle.O)};
@@ -50,7 +51,11 @@ namespace ECS.Systems
                             if (used.Contains(u) || !Utilities.IsInRectangle(u, info.Corners.c0, info.Corners.c1))
                                 continue;
                             
-                            var dist = rectangle.GDFromPointToRectangle(u);
+                            float dist;
+                            if (collider.Value.Value.Type == ColliderType.Box)
+                                dist = rectangle.GDFromPointToRectangle(u);
+                            else
+                                dist = math.distance(u, translation.Value.xy) - stats.BaseRadius;
                             
                             var index = Utilities.GetFlattenedIndex(u - info.Corners.c0, 
                                 info.Corners.c1.x - info.Corners.c0.x + 1);
@@ -80,7 +85,7 @@ namespace ECS.Systems
             Entities
                 .WithAll<BuildingTag>()
                 .ForEach((Entity entity, in Translation translation, in EntityStatsComponent stats, 
-                    in Rotation rotation, in OwnerComponent owner) =>
+                    in Rotation rotation, in OwnerComponent owner, in PhysicsCollider collider) =>
                 {
                     if (owner.PlayerNumber == 2)
                         return;
@@ -97,7 +102,11 @@ namespace ECS.Systems
                             if (used.Contains(u) || !Utilities.IsInRectangle(u, info.Corners.c0, info.Corners.c1))
                                 continue;
                             
-                            var dist = rectangle.GDFromPointToRectangle(u);
+                            float dist;
+                            if (collider.Value.Value.Type == ColliderType.Box)
+                                dist = rectangle.GDFromPointToRectangle(u);
+                            else
+                                dist = math.distance(u, translation.Value.xy) - stats.BaseRadius;
                             
                             var index = Utilities.GetFlattenedIndex(u - info.Corners.c0, 
                                 info.Corners.c1.x - info.Corners.c0.x + 1);

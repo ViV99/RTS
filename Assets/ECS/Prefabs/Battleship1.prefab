@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7266485728111609574}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 102}
   m_LocalScale: {x: 30, y: 30, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
@@ -313,13 +313,14 @@ MonoBehaviour:
   TurnSpeed: 0.02
   MoveSpeed: 18
   Damage: 50
-  ProjectileSpeed: 50
+  ProjectileSpeed: 70
   ReloadTime: 180
   CurrentLoad: 0
   AttackRange: 160
   SightRange: 180
   SpawnCost: 400
   SpawnTime: 3600
+  Pop: 8
 --- !u!114 &7005994284310773524
 MonoBehaviour:
   m_ObjectHideFlags: 0

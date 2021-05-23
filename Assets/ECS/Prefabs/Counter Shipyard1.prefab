@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3358430579231484027}
   - component: {fileID: 4176782274293080767}
   m_Layer: 0
-  m_Name: CounterShipyard1
+  m_Name: Counter Shipyard1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,8 +32,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2098408005612334764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 65, y: 65, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 65, y: 65, z: 1000}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -321,6 +321,7 @@ MonoBehaviour:
   SightRange: 200
   SpawnCost: 4000
   SpawnTime: 7200
+  Pop: 0
 --- !u!114 &8384873596292577938
 MonoBehaviour:
   m_ObjectHideFlags: 0

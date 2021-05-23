@@ -20,13 +20,14 @@ namespace ECS.Systems
         
         protected override void OnUpdate()
         {
+            var gameStateHandler = GetSingletonEntity<GameStateComponent>();
             var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
             var statsGroup = GetComponentDataFromEntity<EntityStatsComponent>();
             Entities
                 .WithAll<SpawnOrderTag>()
                 .ForEach((Entity entity, int entityInQueryIndex,
                     DynamicBuffer<OrderQueueElementComponent> orderQueue, ref OrderQueueInfoComponent orderInfo, 
-                    in Translation translation) =>
+                    in Translation translation, in OwnerComponent owner) =>
                 {
                     var stats = statsGroup[entity];
                     switch (orderQueue[orderInfo.L].State)
@@ -34,6 +35,34 @@ namespace ECS.Systems
                         case OrderState.Complete:
                             return;
                         case OrderState.New:
+                            var gameState = GetComponent<GameStateComponent>(gameStateHandler);
+                            if (owner.PlayerNumber == 1)
+                            {
+                                if (gameState.Pop1 + statsGroup[orderQueue[orderInfo.L].Target].Pop <= gameState.MaxPop1 
+                                    && statsGroup[orderQueue[orderInfo.L].Target].SpawnCost <= gameState.Resources1)
+                                {
+                                    gameState.Pop1 += statsGroup[orderQueue[orderInfo.L].Target].Pop;
+                                    gameState.Resources1 -= statsGroup[orderQueue[orderInfo.L].Target].SpawnCost;
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                if (gameState.Pop2 + statsGroup[orderQueue[orderInfo.L].Target].Pop <= gameState.MaxPop2
+                                    && statsGroup[orderQueue[orderInfo.L].Target].SpawnCost <= gameState.Resources2)
+                                {
+                                    gameState.Pop2 += statsGroup[orderQueue[orderInfo.L].Target].Pop;
+                                    gameState.Resources2 -= statsGroup[orderQueue[orderInfo.L].Target].SpawnCost;
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                            parallelWriter.SetComponent(entityInQueryIndex, gameStateHandler, gameState);
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
                             stats.ReloadTime = statsGroup[orderQueue[orderInfo.L].Target].SpawnTime;
                             statsGroup[entity] = stats;
@@ -59,8 +88,9 @@ namespace ECS.Systems
                                 Value = translation.Value + new float3(
                                     statsGroup[orderQueue[orderInfo.L].Target].BaseRadius, 
                                     statsGroup[orderQueue[orderInfo.L].Target].BaseRadius, 
-                                    0) 
+                                    GetComponent<Translation>(orderQueue[orderInfo.L].Target).Value.z) 
                             });
+                            // TODO: BFS
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
                             return;
                     }

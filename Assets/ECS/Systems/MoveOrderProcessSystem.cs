@@ -46,13 +46,13 @@ namespace ECS.Systems
                         case OrderState.New:
                             if (r == 1)
                                 orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
-                            //physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
+                            physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                             break;
                         case OrderState.InProgress 
                             when math.distance(translation.Value.xy, orderQueue[orderInfo.L].MovePosition) 
                                  < ReachedPositionDistance:
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
-                            //physicsMass.InverseMass = 1 / stats.BaseMass;
+                            physicsMass.InverseMass = 1 / stats.BaseMass;
                             return;
                         case OrderState.InProgress when moveInfo.Index < moveInfo.Count:
                             return;

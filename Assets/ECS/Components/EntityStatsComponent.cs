@@ -21,6 +21,7 @@ namespace ECS.Components
         public float SightRange;
         public int SpawnCost;
         public int SpawnTime;
+        public int Pop;
 
         public EntityStatsComponent WithHealth(float health)
         {

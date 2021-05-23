@@ -34,6 +34,7 @@ namespace ECS.MonoBehaviours
 
         private PrefabsComponent prefabs;
         private Entity lastSelectedEntity;
+        private Entity gameStateHandler;
 
         private void Awake()
         {
@@ -45,8 +46,12 @@ namespace ECS.MonoBehaviours
 
         private void Start()
         {
-            prefabs = EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PrefabsComponent>())
+            prefabs = EntityManager
+                .CreateEntityQuery(ComponentType.ReadOnly<PrefabsComponent>())
                 .GetSingleton<PrefabsComponent>();
+            gameStateHandler = EntityManager
+                .CreateEntityQuery(ComponentType.ReadWrite<GameStateComponent>())
+                .GetSingletonEntity();
         }
 
         private void Update()
@@ -70,7 +75,12 @@ namespace ECS.MonoBehaviours
                 if (lastSelectedEntity == selectedEntities[0])
                 {
                     if (isBuilding)
+                    {
+                        SetSingleEntityMenu(singleMenu, SerializeBuildingStats);
                         SetButtonUnitCount();
+                        return;
+                    }
+                    SetSingleEntityMenu(singleMenu, SerializeUnitStats);
                     return;
                 }
                 lastSelectedEntity = selectedEntities[0];
@@ -82,18 +92,16 @@ namespace ECS.MonoBehaviours
                 else
                 {
                     SetSingleEntityMenu(singleMenu, SerializeBuildingStats);
-                    if (EntityManager.HasComponent<SpawnerTypeComponent>(lastSelectedEntity))
+                    
+                    var type = EntityManager.GetComponentData<BuildingTypeComponent>(lastSelectedEntity).Type;
+                    var buttonTemplate = singleMenu.Find("SpawnUnitButtonTemplate");
+                    if (type == BuildingType.Shipyard)
                     {
-                        var type = EntityManager.GetComponentData<SpawnerTypeComponent>(lastSelectedEntity).Type;
-                        var buttonTemplate = singleMenu.Find("SpawnUnitButtonTemplate");
-                        if (type == SpawnerType.Shipyard)
-                        {
-                            CreateShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
-                        }
-                        else
-                        {
-                            CreateCounterShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
-                        }
+                        CreateShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
+                    }
+                    else if (type == BuildingType.CounterShipyard)
+                    {
+                        CreateCounterShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
                     }
                 }
             }
@@ -225,7 +233,7 @@ namespace ECS.MonoBehaviours
                 if (offset.x > 150)
                 {
                     offset.x = 0;
-                    offset.y -= 150;
+                    offset.y -= 140;
                 }
                 if (EntityNameToView.TryGetValue(entityName, out var view) && view != null)
                 {
@@ -276,6 +284,10 @@ namespace ECS.MonoBehaviours
             }
             else
             {
+                var gameState = EntityManager.GetComponentData<GameStateComponent>(gameStateHandler);
+                gameState.Pop1 -= EntityManager.GetComponentData<EntityStatsComponent>(orderQueue[orderInfo.L].Target).Pop;
+                gameState.Resources1 += EntityManager.GetComponentData<EntityStatsComponent>(orderQueue[orderInfo.L].Target).SpawnCost;
+                EntityManager.SetComponentData(gameStateHandler, gameState);
                 orderInfo.Count = 1;
                 orderInfo.R = orderInfo.L + 1;
                 orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
@@ -305,11 +317,12 @@ namespace ECS.MonoBehaviours
         private string SerializeUnitStats(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            return $"    {EntityManager.GetName(entity)}\n" +
+            var entityName = EntityManager.GetName(entity);
+            return $"    {entityName.Substring(0, entityName.Length - 1)}\n" +
                    $"Health : {stats.CurrentHealth} / {stats.MaxHealth}\n" +
                    $"Armor : {stats.Armor}\n" +
                    $"Speed : {stats.MoveSpeed}\n" +
-                   $"RPM : {3600 / stats.ReloadTime}\n" +
+                   $"RPM : {10800 / stats.ReloadTime}\n" +
                    $"Damage : {stats.Damage}\n" +
                    $"Attack range : {stats.AttackRange}\n";
         }
@@ -317,7 +330,8 @@ namespace ECS.MonoBehaviours
         private string SerializeBuildingStats(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            return $"    {EntityManager.GetName(entity)}\n" +
+            var entityName = EntityManager.GetName(entity);
+            return $"    {entityName.Substring(0, entityName.Length - 1)}\n" +
                    $"Health : {stats.CurrentHealth} / {stats.MaxHealth}\n" +
                    $"Armor : {stats.Armor}\n";
             //$"Load state : {stats.CurrentLoad * 60} / {stats.ReloadTime * 60}\n";
@@ -326,9 +340,11 @@ namespace ECS.MonoBehaviours
         private string SerializeButtonDescription(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            return $"    {EntityManager.GetName(entity).Substring(0)}\n" +
+            var entityName = EntityManager.GetName(entity);
+            return $"{entityName.Substring(0, entityName.Length - 1)}\n" +
                    $"Cost : {stats.SpawnCost}\n" +
-                   $"Creation time : {stats.SpawnTime}\n";
+                   $"Time : {10800 / stats.SpawnTime}\n" +
+                   $"Pop Count : {stats.Pop}";
         }
 
         private Sprite GetSpriteFromEntity(string entityName)

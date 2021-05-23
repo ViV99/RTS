@@ -23,7 +23,7 @@ namespace ECS.Systems
                         return;
                     
                     var moveToPosFloat = new float3(moveTo.Position, 0);
-                    var distToGoal = math.distance(translation.Value, moveToPosFloat);
+                    var distToGoal = math.distance(translation.Value.xy, moveToPosFloat.xy);
                     var distFromLast = math.distance(moveTo.LastStatePosition, translation.Value.xy);
                     if (distToGoal > ReachedPositionDistance)
                     {
@@ -34,7 +34,7 @@ namespace ECS.Systems
                             moveTo.LastStatePosition = translation.Value.xy;
                             moveTo.FramesCount = 0;
                         }
-                        moveTo.LastMoveDirection = math.normalizesafe(moveToPosFloat - translation.Value);
+                        moveTo.LastMoveDirection = new float3(math.normalizesafe(moveToPosFloat.xy - translation.Value.xy), 0);
                         physicsVelocity.Linear = moveTo.LastMoveDirection * stats.MoveSpeed;
                         moveTo.FramesCount++;
                     }

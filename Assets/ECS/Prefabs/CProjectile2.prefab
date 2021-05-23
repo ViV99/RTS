@@ -306,6 +306,7 @@ MonoBehaviour:
   SightRange: 0
   SpawnCost: 0
   SpawnTime: 0
+  Pop: 0
 --- !u!114 &4438159767190111103
 MonoBehaviour:
   m_ObjectHideFlags: 0

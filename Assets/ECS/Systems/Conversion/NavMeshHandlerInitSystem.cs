@@ -23,10 +23,12 @@ namespace ECS.Systems.Conversion
             DstEntityManager.AddComponentData(navMeshHandler, new NavMeshInfoComponent
             {
                 Corners = corners,
-                MovesBlobAssetRef = movesBlobAssetReference
+                MovesBlobAssetRef = movesBlobAssetReference,
             });
             var navMeshBuffer = DstEntityManager.AddBuffer<NavMeshElementComponent>(navMeshHandler);
             InitNavMeshBuffer(navMeshBuffer, corners);
+            var depositsBuffer = DstEntityManager.AddBuffer<DepositsElementComponent>(navMeshHandler);
+            InitDepositsBuffer(depositsBuffer);
         }
 
         private BlobAssetReference<MovesBlobAsset> CreateMovesBlobAsset()
@@ -81,6 +83,26 @@ namespace ECS.Systems.Conversion
                     ClosestBuilding = Entity.Null,
                     DistanceToSolid = float.MaxValue,
                     ClosestSolid = Entity.Null,
+                };
+            }
+        }
+        
+        private void InitDepositsBuffer(DynamicBuffer<DepositsElementComponent> depositsBuffer)
+        {
+            var deposits = new List<int2>
+            {
+                new int2(-505, -150), new int2(-315, 265), new int2(-170, 150), new int2(-200, -290),
+                new int2(-65, -75), new int2(90, 0), new int2(230, 270), new int2(175, -235), 
+                new int2(415, -245), new int2(490, 100)
+            };
+            depositsBuffer.ResizeUninitialized(10);
+            
+            for (var i = 0; i < 10; i++)
+            {
+                depositsBuffer[i] = new DepositsElementComponent
+                {
+                    Position = deposits[i],
+                    IsAvailable = true
                 };
             }
         }

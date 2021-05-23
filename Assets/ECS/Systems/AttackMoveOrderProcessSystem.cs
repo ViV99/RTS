@@ -11,6 +11,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace ECS.Systems
 {
+    [UpdateBefore(typeof(AttackSystem))]
     public class AttackMoveOrderProcessSystem : SystemBase
     {
         private const float ReachedPositionDistance = 5f;
@@ -51,7 +52,7 @@ namespace ECS.Systems
                     {
                         if (r == 1)
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
-                        //physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
+                        physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                     }
                     else if (orderQueue[orderInfo.L].State == OrderState.InProgress)
                     {
@@ -61,7 +62,7 @@ namespace ECS.Systems
                             < ReachedPositionDistance)
                             {
                                 orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
-                                //physicsMass.InverseMass = 1;
+                                physicsMass.InverseMass = 1 / stats.BaseMass;
                                 return;
                             }
                             var target = Entity.Null;
@@ -166,7 +167,8 @@ namespace ECS.Systems
         {
             var result = new NativeList<Entity>(Allocator.TempJob);
             Entities
-                .ForEach((Entity entity, ref OwnerComponent owner) =>
+                .WithAny<UnitTag, BuildingTag>()
+                .ForEach((Entity entity, in OwnerComponent owner) =>
                 {
                     result.Add(entity);
                 }).Schedule();

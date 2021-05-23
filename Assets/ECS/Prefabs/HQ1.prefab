@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4116591724704329213}
   - component: {fileID: 5665098046671702007}
   - component: {fileID: 1466199192078947614}
+  - component: {fileID: 6719602265413784610}
   m_Layer: 0
   m_Name: HQ1
   m_TagString: Untagged
@@ -31,8 +32,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2872307287016969161}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 120, y: 120, z: 1000}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -305,7 +306,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0912f59d1a7221418279d200f0c9a24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BaseRadius: 40
+  BaseRadius: 48
   BaseMass: 1000
   MaxHealth: 25000
   CurrentHealth: 25000
@@ -320,6 +321,7 @@ MonoBehaviour:
   SightRange: 0
   SpawnCost: 0
   SpawnTime: 0
+  Pop: 0
 --- !u!114 &5665098046671702007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,3 +347,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcd7f06cd31fa4741bcd03b1c8bf38ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6719602265413784610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2872307287016969161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e1712a326c9f8742b37edc54f539234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 3

@@ -38,11 +38,11 @@ namespace ECS.MonoBehaviours
 
             CreateButton(buildingButtonTemplate, Vector2.zero, listeningPost, new Vector2(0, 0),
                 prefabs.ListeningPost1);
-            CreateButton(buildingButtonTemplate, new Vector2(0, -120), shipyard, new Vector2(10, 10),
+            CreateButton(buildingButtonTemplate, new Vector2(0, -120), shipyard, new Vector2(0, 0),
                 prefabs.Shipyard1);
-            CreateButton(buildingButtonTemplate, new Vector2(-120, 0), counterShipyard, new Vector2(10, 10),
+            CreateButton(buildingButtonTemplate, new Vector2(-120, 0), counterShipyard, new Vector2(0, 0),
                 prefabs.CounterShipyard1);
-            CreateButton(buildingButtonTemplate, new Vector2(-120, -120), extractor, new Vector2(10, 10),
+            CreateButton(buildingButtonTemplate, new Vector2(-120, -120), extractor, new Vector2(0, 0),
                 prefabs.Extractor1);
             // CreateButton(buildingButtonTemplate, new Vector2(-240, 0), simpleBuildingSprite2, new Vector2(10, 10),
             //     prefabs.TorpedoCruiserPrefab1);

@@ -51,6 +51,25 @@ namespace ECS.Systems
             if (TryGetSingletonEntity<SelectedTag>(out var selected) 
                 && HasComponent<BuildingTag>(selected))
             {
+                if (GetComponent<BuildingTypeComponent>(selected).Type == BuildingType.Extractor)
+                {
+                    var navMeshHandler = GetSingletonEntity<NavMeshInfoComponent>();
+                    var deposits = GetBuffer<DepositsElementComponent>(navMeshHandler);
+                    var translation = GetComponent<Translation>(selected);
+                    var stats = GetComponent<EntityStatsComponent>(selected);
+                    for (var i = 0; i < deposits.Length; i++)
+                    {
+                        if (math.distance(deposits[i].Position, translation.Value.xy)
+                            < stats.SightRange)
+                        {
+                            deposits[i] = new DepositsElementComponent
+                            {
+                                Position = deposits[i].Position,
+                                IsAvailable = true
+                            };
+                        }
+                    }
+                }
                 EntityManager.DestroyEntity(selected);
                 UpdateNavMesh.RaiseNavMeshUpdateFlag();
                 return;
@@ -97,7 +116,7 @@ namespace ECS.Systems
             if (math.distance(lowerLeftCorner, upperRightCorner) < SelectionAreaMinSize)
             {
                 var entity = GetClosestEntity(mousePosition);
-                if (entity != Entity.Null && GetComponent<OwnerComponent>(entity).PlayerNumber != 2)
+                if (entity != Entity.Null/*&& GetComponent<OwnerComponent>(entity).PlayerNumber != 2*/)
                 {
                     EntityManager.AddComponent(entity, ComponentType.ReadWrite<SelectedTag>());
                 }
@@ -127,10 +146,11 @@ namespace ECS.Systems
             var e = Entity.Null;
             var maxScale = float.MinValue;
             Entities
+                .WithAny<UnitTag, BuildingTag>()
                 .ForEach((Entity entity, in Translation translation, in EntityStatsComponent stats) =>
                 {
                     var curScale = stats.BaseRadius;
-                    if (math.distance(translation.Value, mousePosition) < curScale && curScale > maxScale)
+                    if (math.distance(translation.Value.xy, mousePosition.xy) < curScale && curScale > maxScale)
                     {
                         maxScale = curScale;
                         e = entity;
@@ -190,6 +210,7 @@ namespace ECS.Systems
                 .ForEach((Entity entity, int entityInQueryIndex,
                     DynamicBuffer<OrderQueueElementComponent> orderQueue, ref OrderQueueInfoComponent orderInfo) =>
                 {
+                    parallelWriter.RemoveComponent<AttackTargetComponent>(entityInQueryIndex, entity);
                     if (orderInfo.Count == 0)
                     {
                         orderInfo.Count = 0;
@@ -201,7 +222,6 @@ namespace ECS.Systems
                         orderInfo.Count = 1;
                         orderInfo.R = orderInfo.L + 1;
                         orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
-                        parallelWriter.RemoveComponent<AttackTargetComponent>(entityInQueryIndex, entity);
                     }
                 }).Schedule();
             Ecb.AddJobHandleForProducer(Dependency);

@@ -11,6 +11,7 @@ using Random = Unity.Mathematics.Random;
 namespace ECS.Systems
 {
     [UpdateAfter(typeof(OrderQueueUpdateSystem))]
+    [UpdateBefore(typeof(AttackSystem))]
     public class AttackOrderProcessSystem : SystemBase
     {
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
@@ -44,7 +45,7 @@ namespace ECS.Systems
                     {
                         orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.Complete);
                         parallelWriter.RemoveComponent<AttackTargetComponent>(entityInQueryIndex, entity);
-                        //physicsMass.InverseMass = 1;
+                        physicsMass.InverseMass = 1 / stats.BaseMass;
                         return;
                     }
                     var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + frame);
@@ -55,7 +56,7 @@ namespace ECS.Systems
                     {
                         if (r == 1)
                             orderQueue[orderInfo.L] = orderQueue[orderInfo.L].WithState(OrderState.InProgress);
-                        //physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
+                        physicsMass.InverseMass = 1 / math.pow(2, rnd.NextInt(4, 7));
                     }    
                     else if (orderQueue[orderInfo.L].State == OrderState.InProgress)
                     {

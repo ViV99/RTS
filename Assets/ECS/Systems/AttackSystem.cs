@@ -19,13 +19,16 @@ namespace ECS.Systems
         protected override void OnUpdate()
         {
             var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
+            var translationGroup = GetComponentDataFromEntity<Translation>();
             Entities
-                .ForEach((int entityInQueryIndex, ref AttackTargetComponent target, 
-                    ref EntityStatsComponent stats, ref MoveToComponent moveTo, in UnitPrefabsComponent prefabs, 
-                    in Translation translation, in Rotation rotation,in OwnerComponent owner) =>
+                .ForEach((Entity entity, int entityInQueryIndex, ref AttackTargetComponent target, 
+                    ref EntityStatsComponent stats, ref MoveToComponent moveTo, in UnitPrefabsComponent prefabs,
+                    in Rotation rotation,in OwnerComponent owner) =>
                 {
-                    moveTo.LastMoveDirection = math.normalizesafe(GetComponent<Translation>(target.Target).Value
-                                                                  - translation.Value);
+                    if (!translationGroup.HasComponent(target.Target))
+                        return;
+                    moveTo.LastMoveDirection = new float3(math.normalizesafe(
+                        translationGroup[target.Target].Value.xy - translationGroup[entity].Value.xy), 0);
                     stats.CurrentLoad++;
                     if (stats.ReloadTime > stats.CurrentLoad) 
                         return;
@@ -39,13 +42,13 @@ namespace ECS.Systems
                         Damage = stats.Damage,
                         AttackRange = stats.AttackRange
                     });
-                    parallelWriter.SetComponent(entityInQueryIndex, projectile, translation);
+                    parallelWriter.SetComponent(entityInQueryIndex, projectile, translationGroup[entity]);
                     parallelWriter.SetComponent(entityInQueryIndex, projectile, rotation);
                     parallelWriter.AddComponent(entityInQueryIndex, projectile, new MoveToComponent
                     {
                         IsMoving = true,
                         Target = target.Target,
-                        LastStatePosition = translation.Value.xy
+                        LastStatePosition = translationGroup[entity].Value.xy
                     });
                     parallelWriter.AddComponent(entityInQueryIndex, projectile, ComponentType.ReadWrite<ProjectileTag>());
                     parallelWriter.SetComponent(entityInQueryIndex, projectile, new OwnerComponent
