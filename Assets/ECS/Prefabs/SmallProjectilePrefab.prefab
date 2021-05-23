@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 0
+  BaseMass: 0
   MaxHealth: 0
   CurrentHealth: 0
   Armor: 0

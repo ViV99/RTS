@@ -430,12 +430,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0022f6004f031564f8329b51510f08d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simpleBuildingSprite1: {fileID: 21300000, guid: eb81c5f176e01b746be35f0aa3603593, type: 3}
-  simpleBuildingSprite2: {fileID: 21300000, guid: 2590ba2504fe8ec4b984004453cd033d, type: 3}
-  simpleBuildingSprite3: {fileID: 0}
-  simpleBuildingSprite4: {fileID: 0}
-  simpleBuildingSprite5: {fileID: 0}
-  simpleBuildingSprite6: {fileID: 0}
+  listeningPost: {fileID: 0}
+  shipyard: {fileID: 0}
+  counterShipyard: {fileID: 0}
+  extractor: {fileID: 0}
   buildingManager: {fileID: 1081273640}
 --- !u!1 &335592776
 GameObject:
@@ -743,7 +741,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ec953a4970c67da4c891265a731b67c1, type: 3}
   m_Color: {r: 0.3584906, g: 0.3496974, b: 0.3496974, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -794,6 +792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 25
+  BaseMass: 0
   MaxHealth: 0
   CurrentHealth: 0
   Armor: 0
@@ -1156,7 +1155,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 18d529970391b7342b185641882b11f0, type: 3}
   m_Color: {r: 0.3584906, g: 0.3496974, b: 0.3496974, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1207,6 +1206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 25
+  BaseMass: 0
   MaxHealth: 0
   CurrentHealth: 0
   Armor: 0
@@ -2330,7 +2330,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 255b45c581b199d4dbc8d48b589f769a, type: 3}
   m_Color: {r: 0.3584906, g: 0.3496974, b: 0.3496974, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2381,6 +2381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 25
+  BaseMass: 0
   MaxHealth: 0
   CurrentHealth: 0
   Armor: 0
@@ -2627,6 +2628,11 @@ MonoBehaviour:
   destroyerAASprite: {fileID: 0}
   torpedoCruiserSprite: {fileID: 0}
   juggernautSprite: {fileID: 0}
+  HQSprite: {fileID: 0}
+  listeningPostSprite: {fileID: 0}
+  shipyardSprite: {fileID: 0}
+  counterShipyardSprite: {fileID: 0}
+  extractorSprite: {fileID: 0}
 --- !u!1 &1440924595
 GameObject:
   m_ObjectHideFlags: 0
@@ -2852,14 +2858,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 718cf400cc2940c4bbc07d858e1752f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FighterPrefab: {fileID: 6375099819958852673, guid: fc1a605ae84f6024cbc990b931094b59, type: 3}
-  BattleshipPrefab: {fileID: 7266485728111609574, guid: 6d97bf24c576f8d448103a78dfb351d6, type: 3}
-  DestroyerAAPrefab: {fileID: 90525536899925082, guid: dd980a99ba805574aa98109c69029273, type: 3}
-  TorpedoCruiserPrefab: {fileID: 1795292835942265667, guid: b5007d569889a04468b0a3cbe950d33d, type: 3}
-  JuggernautPrefab: {fileID: 41468018378210152, guid: 83148604913a3ad44af47c6266f13dc4, type: 3}
+  FighterPrefab1: {fileID: 6375099819958852673, guid: fc1a605ae84f6024cbc990b931094b59, type: 3}
+  BattleshipPrefab1: {fileID: 7266485728111609574, guid: 6d97bf24c576f8d448103a78dfb351d6, type: 3}
+  DestroyerAAPrefab1: {fileID: 90525536899925082, guid: dd980a99ba805574aa98109c69029273, type: 3}
+  TorpedoCruiserPrefab1: {fileID: 1795292835942265667, guid: b5007d569889a04468b0a3cbe950d33d, type: 3}
+  JuggernautPrefab1: {fileID: 41468018378210152, guid: 83148604913a3ad44af47c6266f13dc4, type: 3}
+  FighterPrefab2: {fileID: 6471532880592335575, guid: 1d7a35882c988ce45bbc81bb5757e2cd, type: 3}
+  BattleshipPrefab2: {fileID: 1777352921612460374, guid: 43af170873c7e8948aaad72ba4c4f698, type: 3}
+  DestroyerAAPrefab2: {fileID: 3573070085112523675, guid: 0d01b3cd0d0be024d895507c536553a0, type: 3}
+  TorpedoCruiserPrefab2: {fileID: 8397770661436224542, guid: 8a4266bc03a071e4ea89b09cc26343bc, type: 3}
+  JuggernautPrefab2: {fileID: 7770150784441174148, guid: 36a440bf5e11b3b459559031f66edf54, type: 3}
+  HQ1: {fileID: 2872307287016969161, guid: 9b7429fd949433941862f7b3f50f2104, type: 3}
+  ListeningPost1: {fileID: 6421677262108297477, guid: 135127a6c190906438a9cf5ef5af0d91, type: 3}
+  Shipyard1: {fileID: 4158082060588552600, guid: 75c510ed140cb514497465a80403f59d, type: 3}
+  CounterShipyard1: {fileID: 2098408005612334764, guid: ee88e7d57704c044c96c4b231f2cafa7, type: 3}
+  Extractor1: {fileID: 1524275943904046352, guid: f71d674e51554da45a855827e826d896, type: 3}
+  HQ2: {fileID: 5442346224104082398, guid: 57aa4b293f6a3c0448dd530ce980491b, type: 3}
+  Shipyard2: {fileID: 49154966022929413, guid: 36487a05fd2b4d84a81265dddb592bd5, type: 3}
+  CounterShipyard2: {fileID: 8482574185329392343, guid: d68b4203fba387c4caaa5dee09fe5b10, type: 3}
+  Extractor2: {fileID: 379038280414582586, guid: aa0835b8e98de154e94189ed04dc409f, type: 3}
   SimplePlayer2UnitPrefab: {fileID: 7001250019107386345, guid: 71c85d9a40fcdaa48b5c898121f66c03, type: 3}
   SimpleSolidPrefab: {fileID: 625694991063943712, guid: f946ae3a5a75a3744b2e5f48386c0c2e, type: 3}
-  SimpleBuildingPrefab: {fileID: 5680663339468823573, guid: d2af5c66429d46f4880fbe9e01768a21, type: 3}
+  HealthBarPrefab: {fileID: 7973592870890554660, guid: b70edea8faaaed14ea2e35ac6d460d7f, type: 3}
+  SelectedLabelPrefab: {fileID: 3962780802196471083, guid: 1e39c53399c02454ba276a8c4066f57d, type: 3}
 --- !u!114 &1670032592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3254,7 +3275,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ec953a4970c67da4c891265a731b67c1, type: 3}
   m_Color: {r: 0.3584906, g: 0.3496974, b: 0.3496974, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3305,6 +3326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 25
+  BaseMass: 0
   MaxHealth: 0
   CurrentHealth: 0
   Armor: 0
@@ -3565,12 +3587,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -100
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
-  m_Color: {r: 0.8490566, g: 0.69978076, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 84c3a56a7e888574fb5ed5910fde2697, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 38.399998, y: 21.599998}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

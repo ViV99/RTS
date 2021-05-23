@@ -306,6 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseRadius: 2
+  BaseMass: 0
   MaxHealth: 10000
   CurrentHealth: 10000
   Armor: 1000

@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 5061105214158404608}
   - component: {fileID: 5859688790201480900}
   m_Layer: 0
-  m_Name: CounterShipyard2
+  m_Name: Counter Shipyard2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

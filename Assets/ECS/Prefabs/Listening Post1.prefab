@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3484771918406671675}
   - component: {fileID: 7681699872635228114}
   m_Layer: 0
-  m_Name: LPost1
+  m_Name: Listening Post1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

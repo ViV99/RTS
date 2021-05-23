@@ -51,7 +51,9 @@ namespace ECS.Systems
             if (TryGetSingletonEntity<SelectedTag>(out var selected) 
                 && HasComponent<BuildingTag>(selected))
             {
-                EntityManager.DestroyEntity(selected);
+				//TODO: доделать это 
+				//EntityManager.DestroyEntity(GetComponent<HealthBarReferenceComponent>(selected).HealthBarEntity);
+				EntityManager.DestroyEntity(selected);
                 UpdateNavMesh.RaiseNavMeshUpdateFlag();
                 return;
             }
@@ -59,6 +61,7 @@ namespace ECS.Systems
                 .WithAll<SelectedTag>()
                 .ForEach((Entity entity, int entityInQueryIndex) =>
                 {
+					parallelWriter.DestroyEntity(entityInQueryIndex, GetComponent<HealthBarReferenceComponent>(entity).HealthBarEntity);
                     parallelWriter.DestroyEntity(entityInQueryIndex, entity);
                 }).Schedule();
             Ecb.AddJobHandleForProducer(Dependency);
@@ -151,6 +154,7 @@ namespace ECS.Systems
                     {
                         parallelWriter.AddComponent(entityInQueryIndex, entity,
                             ComponentType.ReadWrite<SelectedTag>());
+                        
                     }
                 }).Schedule();
             Ecb.AddJobHandleForProducer(Dependency);
