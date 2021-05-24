@@ -28,6 +28,7 @@ namespace ECS.Components
             return new EntityStatsComponent
             {
                 BaseRadius = BaseRadius,
+                BaseMass = BaseMass,
                 MaxHealth = MaxHealth,
                 CurrentHealth = health,
                 Armor = Armor,
@@ -38,7 +39,10 @@ namespace ECS.Components
                 ReloadTime = ReloadTime,
                 CurrentLoad = CurrentLoad,
                 AttackRange = AttackRange,
-                SightRange = SightRange
+                SightRange = SightRange,
+                SpawnCost = SpawnCost,
+                SpawnTime = SpawnTime,
+                Pop = Pop
             };
         }
     }

@@ -71,7 +71,8 @@ namespace ECS.Systems
                             {
                                 if (ownerGroup[unit].PlayerNumber != ownerNumber 
                                     && math.distance(translationGroup[entity].Value.xy, translationGroup[unit].Value.xy) 
-                                    < math.max(stats.SightRange, stats.AttackRange))
+                                    < math.max(stats.SightRange, stats.AttackRange) 
+                                    && rnd.NextInt(1, 101) <= 20)
                                 {
                                     target = unit;
                                     break;

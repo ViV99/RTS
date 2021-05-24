@@ -313,7 +313,7 @@ MonoBehaviour:
   Armor: 3
   TurnSpeed: 0
   MoveSpeed: 0
-  Damage: 25
+  Damage: 50
   ProjectileSpeed: 0
   ReloadTime: 180
   CurrentLoad: 0

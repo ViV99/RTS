@@ -312,14 +312,14 @@ MonoBehaviour:
   Armor: 50
   TurnSpeed: 0.02
   MoveSpeed: 18
-  Damage: 50
+  Damage: 150
   ProjectileSpeed: 70
   ReloadTime: 180
   CurrentLoad: 0
   AttackRange: 160
   SightRange: 180
   SpawnCost: 400
-  SpawnTime: 3600
+  SpawnTime: 2000
   Pop: 8
 --- !u!114 &3829645576479909985
 MonoBehaviour:

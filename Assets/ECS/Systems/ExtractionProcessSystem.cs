@@ -8,15 +8,26 @@ namespace ECS.Systems
     public class ExtractionProcessSystem : SystemBase
     {
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
-        
+
+        private int mainExtractionReload;
         protected override void OnCreate()
         {
             Ecb = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+            mainExtractionReload = 180;
         }
         
         protected override void OnUpdate()
         {
+            mainExtractionReload--;
             var gameStateHandler = GetSingletonEntity<GameStateComponent>();
+            if (mainExtractionReload <= 0)
+            {
+                mainExtractionReload = 180;
+                var gameState = GetComponent<GameStateComponent>(gameStateHandler);
+                gameState.Resources1 += 25;
+                gameState.Resources2 += 50;
+                SetComponent(gameStateHandler, gameState);
+            }
             var parallelWriter = Ecb.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithAll<BuildingTag>()

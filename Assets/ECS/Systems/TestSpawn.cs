@@ -32,8 +32,10 @@ namespace ECS.Systems
             // // Spawn(GetSingleton<PrefabsComponent>().DestroyerAAPrefab2, new float2(300, 300));
             // // Spawn(GetSingleton<PrefabsComponent>().TorpedoCruiserPrefab2, new float2(300, 300));
             // // Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab2, new float2(300, 300));
+            // for (var i = 0; i < 50; i++)
+            //     Spawn(GetSingleton<PrefabsComponent>().DestroyerAAPrefab1, float2.zero);
             // for (var i = 0; i < 10; i++)
-            //     Spawn(GetSingleton<PrefabsComponent>().FighterPrefab1, float2.zero);
+            //     Spawn(GetSingleton<PrefabsComponent>().TorpedoCruiserPrefab1, float2.zero);
             
             cnt++;
         }

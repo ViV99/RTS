@@ -28,7 +28,6 @@ namespace ECS.MonoBehaviours
         private Entity gameStateHandler;
         private PrefabsComponent prefabs;
 
-        private uint framesCount;
         private int currentBuildingReload;
         private int currentAttackMoveReload;
 
@@ -49,7 +48,6 @@ namespace ECS.MonoBehaviours
                 new int2(480, 305), new int2(-500, -285), new int2 (1, 1), new int2(-90, -20),
                 new int2(-150, 115), new int2(-280, 225), new int2(-515, -95), new int2(95, -220)
             };
-            framesCount = 0;
             currentBuildingReload = 100;
             currentAttackMoveReload = 100;
         }
@@ -69,7 +67,6 @@ namespace ECS.MonoBehaviours
 
         private void Update()
         {
-            framesCount = (framesCount + 1) % 1000000000;
             currentBuildingReload--;
             currentAttackMoveReload--;
 
@@ -92,6 +89,8 @@ namespace ECS.MonoBehaviours
         {
             for (var i = 0; i < Shipyards.Count; i++)
             {
+                if (!EntityManager.HasComponent<Translation>(Shipyards[i]))
+                    continue;
                 var orderInfo = EntityManager.GetComponentData<OrderQueueInfoComponent>(Shipyards[i]);
                 if (orderInfo.Count == 0)
                 {
@@ -114,14 +113,16 @@ namespace ECS.MonoBehaviours
 
             for (var i = 0; i < CounterShipyards.Count; i++)
             {
+                if (!EntityManager.HasComponent<Translation>(CounterShipyards[i]))
+                    continue;
                 var orderInfo = EntityManager.GetComponentData<OrderQueueInfoComponent>(CounterShipyards[i]);
                 if (orderInfo.Count == 0)
                 {
-                    var target = GetRandomCounterShipyardUnit();
-                    if (target == Entity.Null)
+                    var spawnEntity = GetRandomCounterShipyardUnit();
+                    if (spawnEntity == Entity.Null)
                         continue;
                     var orderQueue = EntityManager.GetBuffer<OrderQueueElementComponent>(CounterShipyards[i]);
-                    var order = new OrderQueueElementComponent(OrderType.Spawn, OrderState.New, int2.zero, target);
+                    var order = new OrderQueueElementComponent(OrderType.Spawn, OrderState.New, int2.zero, spawnEntity);
                     if (orderInfo.R < orderQueue.Length)
                     {
                         orderQueue[orderInfo.R] = order;
@@ -144,9 +145,10 @@ namespace ECS.MonoBehaviours
             var units = EntityManager.CreateEntityQuery(types).ToEntityArray(Allocator.Temp);
             for (var i = 0; i < units.Length; i++)
             {
-                if (EntityManager.GetComponentData<OwnerComponent>(units[i]).PlayerNumber != 2)
+                if (!EntityManager.HasComponent<Translation>(units[i]) 
+                    || EntityManager.GetComponentData<OwnerComponent>(units[i]).PlayerNumber != 2)
                     continue;
-                if (rnd.Next(1, 101) > 5)
+                if (rnd.Next(1, 101) > 70)
                 {
                     continue;
                 }
@@ -180,25 +182,25 @@ namespace ECS.MonoBehaviours
         {
             var rnd = new Random();
             var number = rnd.Next(1, 101);
-            if (number <= 35)
+            if (number <= 40)
             {
                 SpawnExtractor();
-                return 450;
+                return 3500;
             }
-            if (number <= 80)
+            if (number <= 85)
             {
                 SpawnShipyard();
-                return 750;
+                return 6000;
             }
             SpawnCounterShipyard();
-            return 900;
+            return 7500;
         }
         
         private Entity GetRandomShipyardUnit()
         {
             var rnd = new Random();
             var number = rnd.Next(1, 101);
-            if (number <= 75)
+            if (number <= 85)
             {
                 return prefabs.FighterPrefab2;
             }
@@ -210,15 +212,15 @@ namespace ECS.MonoBehaviours
         {
             var rnd = new Random();
             var number = rnd.Next(1, 101);
-            if (number <= 7)
+            if (number <= 16)
             {
                 return prefabs.DestroyerAAPrefab2;
             }
-            if (number <= 10)
+            if (number <= 22)
             {
                 return prefabs.TorpedoCruiserPrefab2;
             }
-            if (number <= 12)
+            if (number <= 26)
             {
                 return prefabs.JuggernautPrefab2;
             }

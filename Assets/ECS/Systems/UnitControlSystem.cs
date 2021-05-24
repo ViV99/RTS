@@ -74,12 +74,25 @@ namespace ECS.Systems
                 UpdateNavMesh.RaiseNavMeshUpdateFlag();
                 return;
             }
+
+            var gameStateHandler = GetSingletonEntity<GameStateComponent>();
+            var gameState = GetComponent<GameStateComponent>(gameStateHandler);
             Entities
                 .WithAll<SelectedTag>()
-                .ForEach((Entity entity, int entityInQueryIndex) =>
+                .ForEach((Entity entity, int entityInQueryIndex, 
+                    in OwnerComponent owner, in EntityStatsComponent stats) =>
                 {
                     parallelWriter.DestroyEntity(entityInQueryIndex, entity);
+                    if (owner.PlayerNumber == 1)
+                    {
+                        gameState.Pop1 -= stats.Pop;
+                    }
+                    else
+                    {
+                        gameState.Pop2 -= stats.Pop;
+                    }
                 }).Schedule();
+            SetComponent(gameStateHandler, gameState);
             Ecb.AddJobHandleForProducer(Dependency);
         }
 

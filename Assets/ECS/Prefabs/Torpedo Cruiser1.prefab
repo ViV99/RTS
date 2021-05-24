@@ -319,7 +319,7 @@ MonoBehaviour:
   AttackRange: 450
   SightRange: 450
   SpawnCost: 1000
-  SpawnTime: 4800
+  SpawnTime: 2600
   Pop: 12
 --- !u!114 &8340369157350631040
 MonoBehaviour:

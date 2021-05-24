@@ -1,3 +1,4 @@
+using System;
 using ECS.Components;
 using ECS.Tags;
 using Unity.Collections;
@@ -5,6 +6,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace ECS.Systems
 {
@@ -12,6 +14,8 @@ namespace ECS.Systems
     public class IdleProcessSystem : SystemBase
     {
         private EndSimulationEntityCommandBufferSystem Ecb { get; set; }
+        
+        private uint frameCount; 
         
         protected override void OnCreate()
         {
@@ -25,6 +29,7 @@ namespace ECS.Systems
             var translationGroup = GetComponentDataFromEntity<Translation>();
             var ownerGroup = GetComponentDataFromEntity<OwnerComponent>();
             var attackTargetGroup = GetComponentDataFromEntity<AttackTargetComponent>();
+            var frame = ++frameCount;
             Entities
                 .WithAll<UnitTag>()
                 .WithNone<AttackOrderTag, AttackMoveOrderTag>()
@@ -38,11 +43,13 @@ namespace ECS.Systems
                     }
                     var target = Entity.Null;
                     var ownerNumber = ownerGroup[entity].PlayerNumber;
+                    var rnd = Random.CreateFromIndex((uint)entityInQueryIndex + frame);
                     foreach (var unit in units)
                     {
                         if (ownerGroup[unit].PlayerNumber != ownerNumber 
                             && math.distance(translationGroup[entity].Value.xy, translationGroup[unit].Value.xy) 
-                            < stats.AttackRange)
+                            < stats.AttackRange 
+                            && rnd.NextInt(1, 101) <= 20)
                         {
                             target = unit;
                             break;

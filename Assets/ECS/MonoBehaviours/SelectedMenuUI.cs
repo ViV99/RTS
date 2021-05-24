@@ -77,7 +77,9 @@ namespace ECS.MonoBehaviours
                     if (isBuilding)
                     {
                         SetSingleEntityMenu(singleMenu, SerializeBuildingStats);
-                        SetButtonUnitCount();
+                        var type = EntityManager.GetComponentData<BuildingTypeComponent>(lastSelectedEntity).Type;
+                        if (type == BuildingType.Shipyard || type == BuildingType.CounterShipyard)
+                            SetButtonUnitCount();
                         return;
                     }
                     SetSingleEntityMenu(singleMenu, SerializeUnitStats);
@@ -322,7 +324,7 @@ namespace ECS.MonoBehaviours
                    $"Health : {stats.CurrentHealth} / {stats.MaxHealth}\n" +
                    $"Armor : {stats.Armor}\n" +
                    $"Speed : {stats.MoveSpeed}\n" +
-                   $"RPM : {10800 / stats.ReloadTime}\n" +
+                   $"RPM : {10800f / stats.ReloadTime}\n" +
                    $"Damage : {stats.Damage}\n" +
                    $"Attack range : {stats.AttackRange}\n";
         }
@@ -343,7 +345,7 @@ namespace ECS.MonoBehaviours
             var entityName = EntityManager.GetName(entity);
             return $"{entityName.Substring(0, entityName.Length - 1)}\n" +
                    $"Cost : {stats.SpawnCost}\n" +
-                   $"Time : {10800 / stats.SpawnTime}\n" +
+                   $"Time : {60 / stats.SpawnTime}\n" +
                    $"Pop Count : {stats.Pop}";
         }
 
