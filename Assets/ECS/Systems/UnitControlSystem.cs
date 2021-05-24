@@ -53,6 +53,8 @@ namespace ECS.Systems
             {
 				//TODO: доделать это 
 				//EntityManager.DestroyEntity(GetComponent<HealthBarReferenceComponent>(selected).HealthBarEntity);
+                EntityManager.DestroyEntity(GetComponent<SelectedLabelReferenceComponent>(selected).SelectedLabelEntity);
+
 				EntityManager.DestroyEntity(selected);
                 UpdateNavMesh.RaiseNavMeshUpdateFlag();
                 return;
@@ -62,9 +64,11 @@ namespace ECS.Systems
                 .ForEach((Entity entity, int entityInQueryIndex) =>
                 {
 					parallelWriter.DestroyEntity(entityInQueryIndex, GetComponent<HealthBarReferenceComponent>(entity).HealthBarEntity);
+                    parallelWriter.DestroyEntity(entityInQueryIndex, GetComponent<SelectedLabelReferenceComponent>(entity).SelectedLabelEntity);
                     parallelWriter.DestroyEntity(entityInQueryIndex, entity);
                 }).Schedule();
             Ecb.AddJobHandleForProducer(Dependency);
+            Ecb.Update();
         }
 
         private void ProcessLeftButtonDown(float3 mousePosition)

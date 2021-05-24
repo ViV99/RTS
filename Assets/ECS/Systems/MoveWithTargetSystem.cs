@@ -44,6 +44,10 @@ namespace ECS.Systems
                         if (targetStats.CurrentHealth <= 0)
                         {
                             parallelWriter.DestroyEntity(GetComponent<HealthBarReferenceComponent>(moveTo.Target).HealthBarEntity);
+                            if (HasComponent<SelectedLabelReferenceComponent>(moveTo.Target))
+                            {
+                                parallelWriter.DestroyEntity(GetComponent<SelectedLabelReferenceComponent>(moveTo.Target).SelectedLabelEntity);   
+                            }
                             parallelWriter.DestroyEntity(moveTo.Target);
                         }
                         else
