@@ -51,8 +51,7 @@ namespace ECS.Systems
             if (TryGetSingletonEntity<SelectedTag>(out var selected) 
                 && HasComponent<BuildingTag>(selected))
             {
-				//TODO: доделать это 
-				//EntityManager.DestroyEntity(GetComponent<HealthBarReferenceComponent>(selected).HealthBarEntity);
+				EntityManager.DestroyEntity(GetComponent<HealthBarReferenceComponent>(selected).HealthBarEntity);
                 EntityManager.DestroyEntity(GetComponent<SelectedLabelReferenceComponent>(selected).SelectedLabelEntity);
 
 				EntityManager.DestroyEntity(selected);

@@ -54,6 +54,7 @@ namespace ECS.Systems
                 }
             }).Schedule();
             Ecb.AddJobHandleForProducer(Dependency);
+            Ecb.Update();
         }
     }
 }

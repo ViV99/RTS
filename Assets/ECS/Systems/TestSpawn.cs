@@ -16,10 +16,10 @@ namespace ECS.Systems
                 return;
             
             Spawn(GetSingleton<PrefabsComponent>().HQ1);
-            //Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
-            //Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
-            //Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
-			//Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab2);
+            Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
+            Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
+            Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab1);
+			Spawn(GetSingleton<PrefabsComponent>().JuggernautPrefab2);
             /*
             Spawn(GetSingleton<PrefabsComponent>().FighterPrefab1);
             Spawn(GetSingleton<PrefabsComponent>().BattleshipPrefab1);
