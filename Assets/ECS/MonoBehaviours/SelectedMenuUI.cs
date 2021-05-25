@@ -30,7 +30,7 @@ namespace ECS.MonoBehaviours
         private EntityManager EntityManager { get; set; }
         
         private Dictionary<Transform, Entity> ButtonToEntity { get; set; }
-        private Dictionary<string, Transform> EntityNameToView { get; set; }
+        private Dictionary<EntityType, Transform> EntityTypeToView { get; set; }
 
         private PrefabsComponent prefabs;
         private Entity lastSelectedEntity;
@@ -41,7 +41,7 @@ namespace ECS.MonoBehaviours
             EntityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             lastSelectedEntity = Entity.Null;
             ButtonToEntity = new Dictionary<Transform, Entity>();
-            EntityNameToView = new Dictionary<string, Transform>();
+            EntityTypeToView = new Dictionary<EntityType, Transform>();
         }
 
         private void Start()
@@ -77,8 +77,8 @@ namespace ECS.MonoBehaviours
                     if (isBuilding)
                     {
                         SetSingleEntityMenu(singleMenu, SerializeBuildingStats);
-                        var type = EntityManager.GetComponentData<BuildingTypeComponent>(lastSelectedEntity).Type;
-                        if (type == BuildingType.Shipyard || type == BuildingType.CounterShipyard)
+                        var type = EntityManager.GetComponentData<EntityTypeComponent>(lastSelectedEntity).Type;
+                        if (type == EntityType.Shipyard || type == EntityType.CounterShipyard)
                             SetButtonUnitCount();
                         return;
                     }
@@ -95,13 +95,13 @@ namespace ECS.MonoBehaviours
                 {
                     SetSingleEntityMenu(singleMenu, SerializeBuildingStats);
                     
-                    var type = EntityManager.GetComponentData<BuildingTypeComponent>(lastSelectedEntity).Type;
+                    var type = EntityManager.GetComponentData<EntityTypeComponent>(lastSelectedEntity).Type;
                     var buttonTemplate = singleMenu.Find("SpawnUnitButtonTemplate");
-                    if (type == BuildingType.Shipyard)
+                    if (type == EntityType.Shipyard)
                     {
                         CreateShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
                     }
-                    else if (type == BuildingType.CounterShipyard)
+                    else if (type == EntityType.CounterShipyard)
                     {
                         CreateCounterShipyardSpawnUnitButtons(singleMenu, buttonTemplate);
                     }
@@ -113,14 +113,15 @@ namespace ECS.MonoBehaviours
                 groupMenu.gameObject.SetActive(true);
                 lastSelectedEntity = Entity.Null;
                 DeleteSpawnUnitButtons();
-                var selectedCount = new SortedDictionary<string, int>();
-                foreach (var entityName in selectedEntities.Select(entity => EntityManager.GetName(entity)))
+                var selectedCount = new SortedDictionary<EntityType, int>();
+                foreach (var entityType in selectedEntities.Select(entity =>
+                    EntityManager.GetComponentData<EntityTypeComponent>(entity).Type))
                 {
-                    if (!selectedCount.ContainsKey(entityName))
+                    if (!selectedCount.ContainsKey(entityType))
                     {
-                        selectedCount[entityName] = 0;
+                        selectedCount[entityType] = 0;
                     }
-                    selectedCount[entityName]++;
+                    selectedCount[entityType]++;
                 }
                 CleanUpUnitViews(selectedCount);
                 SetGroupEntityMenu(groupMenu, selectedCount);
@@ -136,7 +137,8 @@ namespace ECS.MonoBehaviours
             singleMenu
                 .Find("EntityView")
                 .Find("Image")
-                .GetComponent<Image>().sprite = GetSpriteFromEntity(EntityManager.GetName(lastSelectedEntity));
+                .GetComponent<Image>().sprite = GetSpriteFromEntity(EntityManager
+                .GetComponentData<EntityTypeComponent>(lastSelectedEntity).Type);
             singleMenu
                 .Find("EntityStats")
                 .GetComponent<Text>().text = serializer(lastSelectedEntity);
@@ -203,7 +205,8 @@ namespace ECS.MonoBehaviours
             buttonTransform.gameObject.SetActive(true);
             buttonTransform.GetComponent<RectTransform>().anchoredPosition += offset;
             var imageTransform = buttonTransform.Find("Image");
-            imageTransform.GetComponent<Image>().sprite = GetSpriteFromEntity(EntityManager.GetName(spawnEntity));
+            imageTransform.GetComponent<Image>().sprite = GetSpriteFromEntity(EntityManager
+                .GetComponentData<EntityTypeComponent>(spawnEntity).Type);
             imageTransform.GetComponent<RectTransform>().sizeDelta += imageSizeDelta;
             buttonTransform.Find("UnitDescription").GetComponent<Text>().text = SerializeButtonDescription(spawnEntity);
 
@@ -226,27 +229,27 @@ namespace ECS.MonoBehaviours
             ButtonToEntity[buttonTransform] = spawnEntity;
         }
         
-        private void SetGroupEntityMenu(Transform groupMenu, SortedDictionary<string, int> selectedCount)
+        private void SetGroupEntityMenu(Transform groupMenu, SortedDictionary<EntityType, int> selectedCount)
         {
             var viewTemplate = groupMenu.Find("EntityViewTemplate");
             var offset = Vector2.zero;
-            foreach (var entityName in selectedCount.Keys)
+            foreach (var entityType in selectedCount.Keys)
             {
                 if (offset.x > 150)
                 {
                     offset.x = 0;
                     offset.y -= 140;
                 }
-                if (EntityNameToView.TryGetValue(entityName, out var view) && view != null)
+                if (EntityTypeToView.TryGetValue(entityType, out var view) && view != null)
                 {
                     view.GetComponent<RectTransform>().anchoredPosition =
                         viewTemplate.GetComponent<RectTransform>().anchoredPosition;
                     view.GetComponent<RectTransform>().anchoredPosition += offset;
-                    view.Find("UnitCount").GetComponent<Text>().text = $"x{selectedCount[entityName]}";
+                    view.Find("UnitCount").GetComponent<Text>().text = $"x{selectedCount[entityType]}";
                 } 
                 else
                 {
-                    CreateView(groupMenu, viewTemplate, offset, new Vector2(0, 0), entityName);
+                    CreateView(groupMenu, viewTemplate, offset, new Vector2(0, 0), entityType);
                 }
                 offset.x += 150;
             }
@@ -254,24 +257,24 @@ namespace ECS.MonoBehaviours
         }
         
         private void CreateView(Transform groupMenu, Transform viewTemplate, Vector2 offset, Vector2 imageSizeDelta,
-            string entityName)
+            EntityType entityType)
         {
             var viewTransform = Instantiate(viewTemplate, groupMenu);
             viewTransform.gameObject.SetActive(true);
             viewTransform.GetComponent<RectTransform>().anchoredPosition += offset;
             var imageTransform = viewTransform.Find("Image");
-            imageTransform.GetComponent<Image>().sprite = GetSpriteFromEntity(entityName);
+            imageTransform.GetComponent<Image>().sprite = GetSpriteFromEntity(entityType);
             imageTransform.GetComponent<RectTransform>().sizeDelta += imageSizeDelta;
-            EntityNameToView[entityName] = viewTransform;
+            EntityTypeToView[entityType] = viewTransform;
         }
         
-        private void CleanUpUnitViews(SortedDictionary<string, int> selectedCount)
+        private void CleanUpUnitViews(SortedDictionary<EntityType, int> selectedCount)
         {
-            foreach (var entityName in EntityNameToView.Keys.Where(entityName => !selectedCount.ContainsKey(entityName)))
+            foreach (var entityType in EntityTypeToView.Keys.Where(entityName => !selectedCount.ContainsKey(entityName)))
             {
-                if (EntityNameToView[entityName] == null)
+                if (EntityTypeToView[entityType] == null)
                     continue;
-                Destroy(EntityNameToView[entityName].gameObject);
+                Destroy(EntityTypeToView[entityType].gameObject);
             }
         }
 
@@ -319,8 +322,8 @@ namespace ECS.MonoBehaviours
         private string SerializeUnitStats(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            var entityName = EntityManager.GetName(entity);
-            return $"    {entityName.Substring(0, entityName.Length - 1)}\n" +
+            var entityName = GetNameFromEntity(EntityManager.GetComponentData<EntityTypeComponent>(entity).Type);
+            return $"    {entityName}\n" +
                    $"Health : {stats.CurrentHealth} / {stats.MaxHealth}\n" +
                    $"Armor : {stats.Armor}\n" +
                    $"Speed : {stats.MoveSpeed}\n" +
@@ -332,8 +335,8 @@ namespace ECS.MonoBehaviours
         private string SerializeBuildingStats(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            var entityName = EntityManager.GetName(entity);
-            return $"    {entityName.Substring(0, entityName.Length - 1)}\n" +
+            var entityName = GetNameFromEntity(EntityManager.GetComponentData<EntityTypeComponent>(entity).Type);
+            return $"    {entityName}\n" +
                    $"Health : {stats.CurrentHealth} / {stats.MaxHealth}\n" +
                    $"Armor : {stats.Armor}\n";
             //$"Load state : {stats.CurrentLoad * 60} / {stats.ReloadTime * 60}\n";
@@ -342,36 +345,65 @@ namespace ECS.MonoBehaviours
         private string SerializeButtonDescription(Entity entity)
         {
             var stats = EntityManager.GetComponentData<EntityStatsComponent>(entity);
-            var entityName = EntityManager.GetName(entity);
-            return $"{entityName.Substring(0, entityName.Length - 1)}\n" +
+            var entityName = GetNameFromEntity(EntityManager.GetComponentData<EntityTypeComponent>(entity).Type);
+            return $"{entityName}\n" +
                    $"Cost : {stats.SpawnCost}\n" +
-                   $"Time : {60 / stats.SpawnTime}\n" +
+                   $"Time : {math.round(stats.SpawnTime / 180f)}\n" +
                    $"Pop Count : {stats.Pop}";
         }
 
-        private Sprite GetSpriteFromEntity(string entityName)
+        private Sprite GetSpriteFromEntity(EntityType entityType)
         {
-            if (entityName == EntityManager.GetName(prefabs.FighterPrefab1))
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.FighterPrefab1).Type)
                 return fighterSprite;
-            if (entityName == EntityManager.GetName(prefabs.BattleshipPrefab1))
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.BattleshipPrefab1).Type)
                 return battleshipSprite;
-            if (entityName == EntityManager.GetName(prefabs.DestroyerAAPrefab1))
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.DestroyerAAPrefab1).Type)
                 return destroyerAASprite;
-            if (entityName == EntityManager.GetName(prefabs.TorpedoCruiserPrefab1))
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.TorpedoCruiserPrefab1).Type)
                 return torpedoCruiserSprite;
-            if (entityName == EntityManager.GetName(prefabs.JuggernautPrefab1)) 
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.JuggernautPrefab1).Type)
                 return juggernautSprite;
-            if (entityName == EntityManager.GetName(prefabs.HQ1)) 
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.HQ1).Type) 
                 return HQSprite;
-            if (entityName == EntityManager.GetName(prefabs.ListeningPost1))
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.ListeningPost1).Type)
                 return listeningPostSprite;
-            if (entityName == EntityManager.GetName(prefabs.Shipyard1)) 
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.Shipyard1).Type) 
                 return shipyardSprite;
-            if (entityName == EntityManager.GetName(prefabs.CounterShipyard1)) 
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.CounterShipyard1).Type) 
                 return counterShipyardSprite;
-            if (entityName == EntityManager.GetName(prefabs.Extractor1)) 
+            if (entityType == EntityManager.GetComponentData<EntityTypeComponent>(prefabs.Extractor1).Type) 
                 return extractorSprite;
             return default(Sprite);
+        }
+
+        private string GetNameFromEntity(EntityType entityType)
+        {
+            switch (entityType)
+            {
+                case EntityType.Fighter:
+                    return "Fighter";
+                case EntityType.Battleship:
+                    return "Battleship";
+                case EntityType.DestroyerAA:
+                    return "Destroyer AA";
+                case EntityType.TorpedoCruiser:
+                    return "Torpedo Cruiser";
+                case EntityType.Juggernaut:
+                    return "Juggernaut";
+                case EntityType.Shipyard:
+                    return "Shipyard";
+                case EntityType.CounterShipyard:
+                    return "Counter Shipyard";
+                case EntityType.Extractor:
+                    return "Extractor";
+                case EntityType.HQ:
+                    return "HQ";
+                case EntityType.ListeningPost:
+                    return "Listening Post";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
+            }
         }
     }
 }

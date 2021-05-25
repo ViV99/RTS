@@ -30,7 +30,8 @@ namespace ECS.MonoBehaviours
 
         private void Start()
         {
-            CameraFollowZoom = 80f;
+            CameraFollowZoom = 300f;
+            CameraFollowPosition = new float3(-400, -200, 0);
             cameraFollow.Setup(() => CameraFollowPosition, () => CameraFollowZoom, true, true);
         }
 
@@ -70,7 +71,7 @@ namespace ECS.MonoBehaviours
                 .CreateEntityQuery(ComponentType.ReadOnly<NavMeshInfoComponent>())
                 .GetSingleton<NavMeshInfoComponent>().Corners;
             CameraFollowPosition = new float3(
-                math.clamp(CameraFollowPosition.xy, mapCorners.c0, mapCorners.c1),
+                math.clamp(CameraFollowPosition.xy, new int2(-200, -250), new int2(200, 250)),
                 0);
             if (Input.mouseScrollDelta.y > 0)
             {
@@ -81,7 +82,7 @@ namespace ECS.MonoBehaviours
                 CameraFollowZoom += CameraZoomSpeed * Time.deltaTime;
             }
 
-            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 10f, 400f);
+            CameraFollowZoom = Mathf.Clamp(CameraFollowZoom, 20f, 300f);
             CameraZoomSpeed = CameraFollowZoom * 10;
             CameraMoveSpeed = CameraFollowZoom;
         }

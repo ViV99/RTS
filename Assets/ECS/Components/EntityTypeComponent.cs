@@ -2,8 +2,13 @@ using Unity.Entities;
 
 namespace ECS.Components
 {
-    public enum BuildingType
+    public enum EntityType
     {
+        Fighter,
+        Battleship,
+        DestroyerAA,
+        TorpedoCruiser,
+        Juggernaut,
         Shipyard,
         CounterShipyard,
         Extractor,
@@ -12,8 +17,8 @@ namespace ECS.Components
     }
     
     [GenerateAuthoringComponent]
-    public struct BuildingTypeComponent : IComponentData
+    public struct EntityTypeComponent : IComponentData
     {
-        public BuildingType Type;
+        public EntityType Type;
     }
 }

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5951702289806074040}
   - component: {fileID: 3646605096387684116}
   - component: {fileID: 4670459073237715658}
+  - component: {fileID: 8455694452805541384}
   m_Layer: 0
   m_Name: Fighter2
   m_TagString: Untagged
@@ -347,3 +348,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerNumber: 2
+--- !u!114 &8455694452805541384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6471532880592335575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e1712a326c9f8742b37edc54f539234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 0

@@ -51,7 +51,7 @@ namespace ECS.Systems
             if (TryGetSingletonEntity<SelectedTag>(out var selected) 
                 && HasComponent<BuildingTag>(selected))
             {
-                if (GetComponent<BuildingTypeComponent>(selected).Type == BuildingType.Extractor)
+                if (GetComponent<EntityTypeComponent>(selected).Type == EntityType.Extractor)
                 {
                     var navMeshHandler = GetSingletonEntity<NavMeshInfoComponent>();
                     var deposits = GetBuffer<DepositsElementComponent>(navMeshHandler);
@@ -129,7 +129,7 @@ namespace ECS.Systems
             if (math.distance(lowerLeftCorner, upperRightCorner) < SelectionAreaMinSize)
             {
                 var entity = GetClosestEntity(mousePosition);
-                if (entity != Entity.Null/*&& GetComponent<OwnerComponent>(entity).PlayerNumber != 2*/)
+                if (entity != Entity.Null && GetComponent<OwnerComponent>(entity).PlayerNumber != 2)
                 {
                     EntityManager.AddComponent(entity, ComponentType.ReadWrite<SelectedTag>());
                 }

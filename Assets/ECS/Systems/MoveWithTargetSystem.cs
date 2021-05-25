@@ -54,8 +54,8 @@ namespace ECS.Systems
                             var gameState = GetComponent<GameStateComponent>(gameStateHandler);
                             if (HasComponent<BuildingTag>(moveTo.Target))
                             {
-                                var type = GetComponent<BuildingTypeComponent>(moveTo.Target).Type;
-                                if (type == BuildingType.Extractor)
+                                var type = GetComponent<EntityTypeComponent>(moveTo.Target).Type;
+                                if (type == EntityType.Extractor)
                                 {
                                     for (var i = 0; i < deposits.Length; i++)
                                     {
@@ -71,7 +71,7 @@ namespace ECS.Systems
                                         }
                                     }
                                 } 
-                                else if (type == BuildingType.Shipyard || type == BuildingType.CounterShipyard)
+                                else if (type == EntityType.Shipyard || type == EntityType.CounterShipyard)
                                 {
                                     var orderInfo = GetComponent<OrderQueueInfoComponent>(moveTo.Target);
                                     if (orderInfo.Count != 0)

@@ -120,8 +120,8 @@ namespace ECS.MonoBehaviours
 
             if (Utilities.IsInRectangle(position, info.Corners.c0, info.Corners.c1))
             {
-                if (EntityManager.GetComponentData<BuildingTypeComponent>(ActiveBuildingType).Type !=
-                    BuildingType.Extractor)
+                if (EntityManager.GetComponentData<EntityTypeComponent>(ActiveBuildingType).Type !=
+                    EntityType.Extractor)
                 {
                     return (navMesh[index].DistanceToSolid > stats.BaseRadius
                            && navMesh[index].DistanceToBuilding < stats.SightRange, new int2(100000, 100000));

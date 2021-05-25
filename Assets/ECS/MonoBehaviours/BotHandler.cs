@@ -185,15 +185,15 @@ namespace ECS.MonoBehaviours
             if (number <= 40)
             {
                 SpawnExtractor();
-                return 3500;
+                return 3000;
             }
             if (number <= 85)
             {
                 SpawnShipyard();
-                return 6000;
+                return 5000;
             }
             SpawnCounterShipyard();
-            return 7500;
+            return 7000;
         }
         
         private Entity GetRandomShipyardUnit()

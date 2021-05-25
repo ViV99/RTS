@@ -32,9 +32,9 @@ namespace ECS.Systems
             Entities
                 .WithAll<BuildingTag>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref EntityStatsComponent stats, 
-                    in BuildingTypeComponent type, in OwnerComponent owner) =>
+                    in EntityTypeComponent type, in OwnerComponent owner) =>
                 {
-                    if (type.Type != BuildingType.Extractor)
+                    if (type.Type != EntityType.Extractor)
                         return;
                     stats.CurrentLoad++;
                     if (stats.ReloadTime > stats.CurrentLoad) 

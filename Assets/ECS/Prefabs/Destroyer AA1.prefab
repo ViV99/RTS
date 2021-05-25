@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 726958691231192629}
   - component: {fileID: 7644091408254751129}
   - component: {fileID: 1756071154355240007}
+  - component: {fileID: -6853113459911958408}
   m_Layer: 0
   m_Name: Destroyer AA1
   m_TagString: Untagged
@@ -347,3 +348,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerNumber: 1
+--- !u!114 &-6853113459911958408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90525536899925082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e1712a326c9f8742b37edc54f539234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 2
